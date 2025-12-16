@@ -1,0 +1,5 @@
+admin:
+  name: 管理员
+  title: 项目维护者
+  url: https://github.com/your-org
+  image_url: https://github.com/your-org.png
