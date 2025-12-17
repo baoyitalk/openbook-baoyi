@@ -31,14 +31,19 @@
 - [v1.0.0_REQUIREMENTS.md](./v1.0.0_REQUIREMENTS.md) - 需求文档（根文档）
 
 ### 🏗️ 架构支柱文档
-- 待创建
+- [TECH_DECISIONS.md](./TECH_DECISIONS.md) - 技术决策记录
+- [CONFIG_GUIDE.md](./CONFIG_GUIDE.md) - 配置指南
 
 ### ⚙️ 运维支柱文档
 - [DEPLOYMENT_CHECKLIST.md](./DEPLOYMENT_CHECKLIST.md) - 部署检查清单
 - [RELEASE_NOTES.md](./RELEASE_NOTES.md) - 发布说明
 
 ### 📝 迭代日志
+- [v1.0.0_2025-12-17.md](./v1.0.0_2025-12-17.md) - 整理昨天讨论，更新迭代文档
 - [v1.0.0_2025-12-16.md](./v1.0.0_2025-12-16.md) - 初始化支柱体系
+
+### 📋 其他文档
+- [DISCUSSION_SUMMARY.md](./DISCUSSION_SUMMARY.md) - 讨论总结（2025-12-16 至 2025-12-17）
 
 ---
 
