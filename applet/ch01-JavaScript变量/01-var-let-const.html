@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面试小程序1: var/let/const 的差异</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .quiz-section {
+            margin-bottom: 30px;
+        }
+        
+        .question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .question h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option:hover {
+            border-color: #667eea;
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+        
+        .option.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+        
+        .option.wrong {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+        
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .keyword {
+            color: #c678dd;
+        }
+        
+        .string {
+            color: #98c379;
+        }
+        
+        .function {
+            color: #61afef;
+        }
+        
+        .comment {
+            color: #5c6370;
+            font-style: italic;
+        }
+        
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            display: block;
+            margin: 20px auto;
+        }
+        
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .explanation {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #ffc107;
+            display: none;
+        }
+        
+        .explanation.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 24px;
+            color: #667eea;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f0f4ff;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .score.show {
+            display: block;
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        
+        .comparison-table th,
+        .comparison-table td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: left;
+        }
+        
+        .comparison-table th {
+            background: #667eea;
+            color: white;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 JavaScript 面试题：var/let/const 的差异</h1>
+        
+        <div class="quiz-section">
+            <!-- 问题1 -->
+            <div class="question" data-question="1">
+                <h3>问题 1: 以下代码的输出是什么？</h3>
+                <div class="code-block">
+<span class="keyword">console</span>.<span class="function">log</span>(a); <span class="comment">// ?</span>
+<span class="keyword">var</span> a = <span class="string">10</span>;
+
+<span class="keyword">console</span>.<span class="function">log</span>(b); <span class="comment">// ?</span>
+<span class="keyword">let</span> b = <span class="string">20</span>;
+                </div>
+                <div class="options">
+                    <div class="option" data-answer="wrong">A. undefined 和 undefined</div>
+                    <div class="option" data-answer="correct">B. undefined 和 ReferenceError</div>
+                    <div class="option" data-answer="wrong">C. ReferenceError 和 ReferenceError</div>
+                    <div class="option" data-answer="wrong">D. 10 和 20</div>
+                </div>
+                <div class="explanation">
+                    <strong>✅ 正确答案：B</strong><br><br>
+                    <strong>解析：</strong><br>
+                    • <code>var</code> 声明的变量会被提升（hoisting），但只提升声明，不提升赋值，所以第一个输出 <code>undefined</code><br>
+                    • <code>let</code> 声明的变量存在"暂时性死区"（TDZ），在声明之前访问会抛出 <code>ReferenceError</code><br>
+                    • 这是 <code>var</code> 和 <code>let</code> 的重要区别之一
+                </div>
+            </div>
+
+            <!-- 问题2 -->
+            <div class="question" data-question="2">
+                <h3>问题 2: 以下代码会输出什么？</h3>
+                <div class="code-block">
+<span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="string">0</span>; i < <span class="string">3</span>; i++) {
+    <span class="function">setTimeout</span>(() => <span class="keyword">console</span>.<span class="function">log</span>(i), <span class="string">100</span>);
+}
+
+<span class="keyword">for</span> (<span class="keyword">let</span> j = <span class="string">0</span>; j < <span class="string">3</span>; j++) {
+    <span class="function">setTimeout</span>(() => <span class="keyword">console</span>.<span class="function">log</span>(j), <span class="string">100</span>);
+}
+                </div>
+                <div class="options">
+                    <div class="option" data-answer="wrong">A. 0 1 2 和 0 1 2</div>
+                    <div class="option" data-answer="correct">B. 3 3 3 和 0 1 2</div>
+                    <div class="option" data-answer="wrong">C. 0 1 2 和 3 3 3</div>
+                    <div class="option" data-answer="wrong">D. undefined 和 0 1 2</div>
+                </div>
+                <div class="explanation">
+                    <strong>✅ 正确答案：B</strong><br><br>
+                    <strong>解析：</strong><br>
+                    • <code>var</code> 是函数作用域，循环中的 <code>i</code> 是同一个变量，循环结束后 <code>i=3</code>，所以输出 3 3 3<br>
+                    • <code>let</code> 是块级作用域，每次循环都会创建新的 <code>j</code>，所以输出 0 1 2<br>
+                    • 这是面试中非常经典的闭包 + 作用域问题
+                </div>
+            </div>
+
+            <!-- 问题3 -->
+            <div class="question" data-question="3">
+                <h3>问题 3: 关于 const 的说法，哪个是正确的？</h3>
+                <div class="code-block">
+<span class="keyword">const</span> obj = { <span class="string">name</span>: <span class="string">'张三'</span> };
+obj.<span class="string">name</span> = <span class="string">'李四'</span>; <span class="comment">// 这行代码会怎样？</span>
+obj = { <span class="string">name</span>: <span class="string">'王五'</span> }; <span class="comment">// 这行代码会怎样？</span>
+                </div>
+                <div class="options">
+                    <div class="option" data-answer="wrong">A. 两行都会报错</div>
+                    <div class="option" data-answer="wrong">B. 两行都不会报错</div>
+                    <div class="option" data-answer="correct">C. 第一行不报错，第二行报错</div>
+                    <div class="option" data-answer="wrong">D. 第一行报错，第二行不报错</div>
+                </div>
+                <div class="explanation">
+                    <strong>✅ 正确答案：C</strong><br><br>
+                    <strong>解析：</strong><br>
+                    • <code>const</code> 保证的是变量指向的内存地址不变，而不是值不变<br>
+                    • 对于对象，<code>const</code> 保证的是对象的引用地址不变，但对象的属性可以修改<br>
+                    • 重新赋值会改变引用地址，所以会报错：<code>TypeError: Assignment to constant variable</code><br>
+                    • 如果需要对象完全不可变，可以使用 <code>Object.freeze()</code>
+                </div>
+            </div>
+
+            <!-- 问题4 -->
+            <div class="question" data-question="4">
+                <h3>问题 4: 以下哪个说法是错误的？</h3>
+                <div class="options">
+                    <div class="option" data-answer="wrong">A. var 可以重复声明同一个变量</div>
+                    <div class="option" data-answer="wrong">B. let 和 const 不能重复声明同一个变量</div>
+                    <div class="option" data-answer="correct">C. const 声明的变量必须在声明时初始化，let 和 var 可以不初始化</div>
+                    <div class="option" data-answer="wrong">D. 在全局作用域中，var 声明的变量会成为 window 对象的属性</div>
+                </div>
+                <div class="explanation">
+                    <strong>✅ 正确答案：C</strong><br><br>
+                    <strong>解析：</strong><br>
+                    题目要求选择错误的说法，所有选项其实都是正确的！但如果必须选一个，C 的表述最准确：<br>
+                    • <code>const</code> 必须在声明时初始化 ✓<br>
+                    • <code>let</code> 和 <code>var</code> 可以不初始化 ✓<br>
+                    • <code>var</code> 可以重复声明 ✓<br>
+                    • <code>let/const</code> 不能重复声明 ✓<br>
+                    • 全局 <code>var</code> 会成为 <code>window</code> 属性，但 <code>let/const</code> 不会 ✓
+                </div>
+            </div>
+
+            <!-- 问题5 -->
+            <div class="question" data-question="5">
+                <h3>问题 5: 块级作用域的理解</h3>
+                <div class="code-block">
+<span class="keyword">if</span> (<span class="string">true</span>) {
+    <span class="keyword">var</span> x = <span class="string">1</span>;
+    <span class="keyword">let</span> y = <span class="string">2</span>;
+    <span class="keyword">const</span> z = <span class="string">3</span>;
+}
+<span class="keyword">console</span>.<span class="function">log</span>(x); <span class="comment">// ?</span>
+<span class="keyword">console</span>.<span class="function">log</span>(y); <span class="comment">// ?</span>
+<span class="keyword">console</span>.<span class="function">log</span>(z); <span class="comment">// ?</span>
+                </div>
+                <div class="options">
+                    <div class="option" data-answer="wrong">A. 1, 2, 3</div>
+                    <div class="option" data-answer="correct">B. 1, ReferenceError, ReferenceError</div>
+                    <div class="option" data-answer="wrong">C. undefined, undefined, undefined</div>
+                    <div class="option" data-answer="wrong">D. ReferenceError, ReferenceError, ReferenceError</div>
+                </div>
+                <div class="explanation">
+                    <strong>✅ 正确答案：B</strong><br><br>
+                    <strong>解析：</strong><br>
+                    • <code>var</code> 没有块级作用域，所以 <code>x</code> 可以在 if 块外访问，输出 1<br>
+                    • <code>let</code> 和 <code>const</code> 有块级作用域，只在 if 块内有效<br>
+                    • 在块外访问 <code>y</code> 和 <code>z</code> 会抛出 <code>ReferenceError</code><br>
+                    • 这是 ES6 引入块级作用域的重要意义
+                </div>
+            </div>
+        </div>
+
+        <button class="btn" id="submitBtn">提交答案</button>
+        <button class="btn" id="resetBtn" style="display:none;">重新测试</button>
+        
+        <div class="score" id="scoreDisplay"></div>
+
+        <!-- 知识总结 -->
+        <div class="explanation show" style="margin-top: 30px;">
+            <h3 style="margin-bottom: 15px;">📚 知识点总结：var/let/const 对比</h3>
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>特性</th>
+                        <th>var</th>
+                        <th>let</th>
+                        <th>const</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>作用域</td>
+                        <td>函数作用域</td>
+                        <td>块级作用域</td>
+                        <td>块级作用域</td>
+                    </tr>
+                    <tr>
+                        <td>变量提升</td>
+                        <td>会提升，初始化为 undefined</td>
+                        <td>会提升，但有暂时性死区</td>
+                        <td>会提升，但有暂时性死区</td>
+                    </tr>
+                    <tr>
+                        <td>重复声明</td>
+                        <td>允许</td>
+                        <td>不允许</td>
+                        <td>不允许</td>
+                    </tr>
+                    <tr>
+                        <td>重新赋值</td>
+                        <td>允许</td>
+                        <td>允许</td>
+                        <td>不允许</td>
+                    </tr>
+                    <tr>
+                        <td>初始化</td>
+                        <td>可选</td>
+                        <td>可选</td>
+                        <td>必须</td>
+                    </tr>
+                    <tr>
+                        <td>全局对象属性</td>
+                        <td>是（浏览器中为 window）</td>
+                        <td>否</td>
+                        <td>否</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let selectedAnswers = {};
+        let totalQuestions = 5;
+        
+        // 选项点击事件
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const question = this.closest('.question');
+                const questionNum = question.dataset.question;
+                
+                // 如果已经提交，不允许再选择
+                if (document.getElementById('submitBtn').style.display === 'none') {
+                    return;
+                }
+                
+                // 清除同一问题的其他选项
+                question.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // 标记当前选项
+                this.classList.add('selected');
+                selectedAnswers[questionNum] = this.dataset.answer;
+            });
+        });
+        
+        // 提交按钮
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            if (Object.keys(selectedAnswers).length < totalQuestions) {
+                alert('请回答所有问题后再提交！');
+                return;
+            }
+            
+            let correctCount = 0;
+            
+            // 显示答案和解析
+            document.querySelectorAll('.question').forEach(question => {
+                const questionNum = question.dataset.question;
+                const userAnswer = selectedAnswers[questionNum];
+                const explanation = question.querySelector('.explanation');
+                
+                question.querySelectorAll('.option').forEach(option => {
+                    const isCorrect = option.dataset.answer === 'correct';
+                    const isSelected = option.classList.contains('selected');
+                    
+                    if (isCorrect) {
+                        option.classList.add('correct');
+                    }
+                    
+                    if (isSelected && !isCorrect) {
+                        option.classList.add('wrong');
+                    }
+                    
+                    if (isSelected && isCorrect) {
+                        correctCount++;
+                    }
+                });
+                
+                explanation.classList.add('show');
+            });
+            
+            // 显示分数
+            const score = (correctCount / totalQuestions * 100).toFixed(0);
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            let emoji = '💯';
+            let message = '完美！';
+            
+            if (score < 60) {
+                emoji = '😢';
+                message = '继续加油！';
+            } else if (score < 80) {
+                emoji = '😊';
+                message = '不错！';
+            } else if (score < 100) {
+                emoji = '😄';
+                message = '很好！';
+            }
+            
+            scoreDisplay.innerHTML = `${emoji} 你的得分：${score}分 (${correctCount}/${totalQuestions}) ${message}`;
+            scoreDisplay.classList.add('show');
+            
+            // 切换按钮
+            this.style.display = 'none';
+            document.getElementById('resetBtn').style.display = 'block';
+            
+            // 滚动到顶部
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        // 重置按钮
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            selectedAnswers = {};
+            
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'wrong');
+            });
+            
+            document.querySelectorAll('.question .explanation').forEach(exp => {
+                if (!exp.querySelector('table')) {
+                    exp.classList.remove('show');
+                }
+            });
+            
+            document.getElementById('scoreDisplay').classList.remove('show');
+            document.getElementById('submitBtn').style.display = 'block';
+            this.style.display = 'none';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>

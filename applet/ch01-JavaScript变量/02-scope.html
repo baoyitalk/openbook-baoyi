@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面试小程序2: 谈谈作用域</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 900px;
+            width: 100%;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #f5576c;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+        
+        .question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border-left: 4px solid #f5576c;
+        }
+        
+        .question h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .option {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid #e0e0e0;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .option:hover {
+            border-color: #f5576c;
+            transform: translateX(5px);
+        }
+        
+        .option.selected {
+            border-color: #f5576c;
+            background: #fff0f3;
+        }
+        
+        .option.correct {
+            border-color: #4caf50;
+            background: #e8f5e9;
+        }
+        
+        .option.wrong {
+            border-color: #f44336;
+            background: #ffebee;
+        }
+        
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .keyword { color: #c678dd; }
+        .string { color: #98c379; }
+        .function { color: #61afef; }
+        .comment { color: #5c6370; font-style: italic; }
+        
+        .btn {
+            background: #f5576c;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s;
+            display: block;
+            margin: 20px auto;
+        }
+        
+        .btn:hover {
+            background: #e04659;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(245, 87, 108, 0.4);
+        }
+        
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .explanation {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 15px;
+            border-left: 4px solid #ffc107;
+            display: none;
+        }
+        
+        .explanation.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .score {
+            text-align: center;
+            font-size: 24px;
+            color: #f5576c;
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff0f3;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        .score.show {
+            display: block;
+        }
+
+        .scope-visual {
+            background: #f0f4ff;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px dashed #667eea;
+        }
+
+        .scope-level {
+            margin: 10px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .scope-level h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 JavaScript 面试题：谈谈作用域</h1>
+        
+        <!-- 问题1 -->
+        <div class="question" data-question="1">
+            <h3>问题 1: JavaScript 有哪几种作用域？</h3>
+            <div class="options">
+                <div class="option" data-answer="wrong">A. 全局作用域和局部作用域</div>
+                <div class="option" data-answer="correct">B. 全局作用域、函数作用域和块级作用域</div>
+                <div class="option" data-answer="wrong">C. 全局作用域和函数作用域</div>
+                <div class="option" data-answer="wrong">D. 只有全局作用域</div>
+            </div>
+            <div class="explanation">
+                <strong>✅ 正确答案：B</strong><br><br>
+                <strong>解析：</strong><br>
+                ES6 之前，JavaScript 只有全局作用域和函数作用域。ES6 引入了 let 和 const 后，增加了块级作用域。<br>
+                • <strong>全局作用域</strong>：在代码的任何地方都能访问<br>
+                • <strong>函数作用域</strong>：只在函数内部可访问<br>
+                • <strong>块级作用域</strong>：只在代码块 {} 内可访问（let/const）
+            </div>
+        </div>
+
+        <!-- 问题2 -->
+        <div class="question" data-question="2">
+            <h3>问题 2: 以下代码的输出是什么？</h3>
+            <div class="code-block">
+<span class="keyword">var</span> a = <span class="string">1</span>;
+<span class="keyword">function</span> <span class="function">test</span>() {
+    <span class="keyword">console</span>.<span class="function">log</span>(a);
+    <span class="keyword">var</span> a = <span class="string">2</span>;
+    <span class="keyword">console</span>.<span class="function">log</span>(a);
+}
+<span class="function">test</span>();
+            </div>
+            <div class="options">
+                <div class="option" data-answer="wrong">A. 1, 2</div>
+                <div class="option" data-answer="correct">B. undefined, 2</div>
+                <div class="option" data-answer="wrong">C. 1, 1</div>
+                <div class="option" data-answer="wrong">D. ReferenceError</div>
+            </div>
+            <div class="explanation">
+                <strong>✅ 正确答案：B</strong><br><br>
+                <strong>解析：</strong><br>
+                由于变量提升，函数内的 <code>var a</code> 声明被提升到函数顶部，但赋值留在原处。相当于：<br>
+                <pre style="background: #282c34; color: #abb2bf; padding: 10px; border-radius: 5px; margin-top: 10px;">
+function test() {
+    var a;  // 声明被提升
+    console.log(a);  // undefined
+    a = 2;  // 赋值
+    console.log(a);  // 2
+}</pre>
+                所以第一个输出 undefined，第二个输出 2。
+            </div>
+        </div>
+
+        <!-- 问题3 -->
+        <div class="question" data-question="3">
+            <h3>问题 3: 什么是作用域链？</h3>
+            <div class="options">
+                <div class="option" data-answer="wrong">A. 变量的声明顺序</div>
+                <div class="option" data-answer="correct">B. 当前作用域及其所有父级作用域形成的链式结构</div>
+                <div class="option" data-answer="wrong">C. 函数调用的顺序</div>
+                <div class="option" data-answer="wrong">D. 变量的类型转换链</div>
+            </div>
+            <div class="explanation">
+                <strong>✅ 正确答案：B</strong><br><br>
+                <strong>解析：</strong><br>
+                作用域链是由当前作用域及其所有父级作用域组成的链式结构。当查找变量时，JavaScript 会按照以下顺序查找：<br>
+                1. 当前作用域<br>
+                2. 父级作用域<br>
+                3. 继续向上查找<br>
+                4. 直到全局作用域<br>
+                5. 如果都找不到，返回 undefined 或抛出 ReferenceError
+            </div>
+        </div>
+
+        <!-- 问题4 -->
+        <div class="question" data-question="4">
+            <h3>问题 4: 以下代码会输出什么？</h3>
+            <div class="code-block">
+<span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="string">0</span>; i < <span class="string">3</span>; i++) {
+    <span class="function">setTimeout</span>(<span class="keyword">function</span>() {
+        <span class="keyword">console</span>.<span class="function">log</span>(i);
+    }, <span class="string">1000</span>);
+}
+            </div>
+            <div class="options">
+                <div class="option" data-answer="wrong">A. 0, 1, 2</div>
+                <div class="option" data-answer="correct">B. 3, 3, 3</div>
+                <div class="option" data-answer="wrong">C. undefined, undefined, undefined</div>
+                <div class="option" data-answer="wrong">D. 2, 2, 2</div>
+            </div>
+            <div class="explanation">
+                <strong>✅ 正确答案：B</strong><br><br>
+                <strong>解析：</strong><br>
+                因为 <code>var</code> 是函数作用域，不是块级作用域，所以循环中的 <code>i</code> 是同一个变量。当 setTimeout 执行时，循环已经结束，此时 <code>i = 3</code>。<br><br>
+                <strong>解决方案：</strong><br>
+                1. 使用 <code>let</code> 替代 <code>var</code>（块级作用域）<br>
+                2. 使用闭包（IIFE）<br>
+                3. 使用 forEach
+            </div>
+        </div>
+
+        <!-- 问题5 -->
+        <div class="question" data-question="5">
+            <h3>问题 5: 块级作用域的理解</h3>
+            <div class="code-block">
+{
+    <span class="keyword">let</span> x = <span class="string">1</span>;
+    <span class="keyword">const</span> y = <span class="string">2</span>;
+    <span class="keyword">var</span> z = <span class="string">3</span>;
+}
+<span class="keyword">console</span>.<span class="function">log</span>(z); <span class="comment">// ?</span>
+<span class="keyword">console</span>.<span class="function">log</span>(x); <span class="comment">// ?</span>
+            </div>
+            <div class="options">
+                <div class="option" data-answer="wrong">A. 3, 1</div>
+                <div class="option" data-answer="correct">B. 3, ReferenceError</div>
+                <div class="option" data-answer="wrong">C. ReferenceError, ReferenceError</div>
+                <div class="option" data-answer="wrong">D. undefined, undefined</div>
+            </div>
+            <div class="explanation">
+                <strong>✅ 正确答案：B</strong><br><br>
+                <strong>解析：</strong><br>
+                • <code>var</code> 没有块级作用域，所以 <code>z</code> 可以在块外访问，输出 3<br>
+                • <code>let</code> 和 <code>const</code> 有块级作用域，只在 {} 内有效<br>
+                • 访问 <code>x</code> 会抛出 ReferenceError<br><br>
+                这是 ES6 引入块级作用域的重要意义，可以避免变量污染。
+            </div>
+        </div>
+
+        <button class="btn" id="submitBtn">提交答案</button>
+        <button class="btn" id="resetBtn" style="display:none;">重新测试</button>
+        
+        <div class="score" id="scoreDisplay"></div>
+
+        <!-- 作用域可视化 -->
+        <div class="scope-visual">
+            <h3 style="color: #667eea; margin-bottom: 15px;">📚 作用域可视化</h3>
+            <div class="scope-level">
+                <h4>全局作用域</h4>
+                <p>• 在整个程序中都可访问<br>• 声明在函数外部的变量<br>• 浏览器中为 window 对象</p>
+                <div class="scope-level" style="margin-left: 20px; border-color: #f5576c;">
+                    <h4 style="color: #f5576c;">函数作用域</h4>
+                    <p>• 只在函数内部可访问<br>• function 关键字创建<br>• var 声明的变量</p>
+                    <div class="scope-level" style="margin-left: 20px; border-color: #4caf50;">
+                        <h4 style="color: #4caf50;">块级作用域</h4>
+                        <p>• 只在代码块 {} 内可访问<br>• let 和 const 声明<br>• if、for、while 等代码块</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedAnswers = {};
+        let totalQuestions = 5;
+        
+        document.querySelectorAll('.option').forEach(option => {
+            option.addEventListener('click', function() {
+                const question = this.closest('.question');
+                const questionNum = question.dataset.question;
+                
+                if (document.getElementById('submitBtn').style.display === 'none') {
+                    return;
+                }
+                
+                question.querySelectorAll('.option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                this.classList.add('selected');
+                selectedAnswers[questionNum] = this.dataset.answer;
+            });
+        });
+        
+        document.getElementById('submitBtn').addEventListener('click', function() {
+            if (Object.keys(selectedAnswers).length < totalQuestions) {
+                alert('请回答所有问题后再提交！');
+                return;
+            }
+            
+            let correctCount = 0;
+            
+            document.querySelectorAll('.question').forEach(question => {
+                const questionNum = question.dataset.question;
+                const explanation = question.querySelector('.explanation');
+                
+                question.querySelectorAll('.option').forEach(option => {
+                    const isCorrect = option.dataset.answer === 'correct';
+                    const isSelected = option.classList.contains('selected');
+                    
+                    if (isCorrect) {
+                        option.classList.add('correct');
+                    }
+                    
+                    if (isSelected && !isCorrect) {
+                        option.classList.add('wrong');
+                    }
+                    
+                    if (isSelected && isCorrect) {
+                        correctCount++;
+                    }
+                });
+                
+                explanation.classList.add('show');
+            });
+            
+            const score = (correctCount / totalQuestions * 100).toFixed(0);
+            const scoreDisplay = document.getElementById('scoreDisplay');
+            let emoji = '💯';
+            let message = '完美！';
+            
+            if (score < 60) {
+                emoji = '😢';
+                message = '继续加油！';
+            } else if (score < 80) {
+                emoji = '😊';
+                message = '不错！';
+            } else if (score < 100) {
+                emoji = '😄';
+                message = '很好！';
+            }
+            
+            scoreDisplay.innerHTML = `${emoji} 你的得分：${score}分 (${correctCount}/${totalQuestions}) ${message}`;
+            scoreDisplay.classList.add('show');
+            
+            this.style.display = 'none';
+            document.getElementById('resetBtn').style.display = 'block';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            selectedAnswers = {};
+            
+            document.querySelectorAll('.option').forEach(option => {
+                option.classList.remove('selected', 'correct', 'wrong');
+            });
+            
+            document.querySelectorAll('.question .explanation').forEach(exp => {
+                exp.classList.remove('show');
+            });
+            
+            document.getElementById('scoreDisplay').classList.remove('show');
+            document.getElementById('submitBtn').style.display = 'block';
+            this.style.display = 'none';
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    </script>
+</body>
+</html>
