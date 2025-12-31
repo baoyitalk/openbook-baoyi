@@ -1,5 +1,5 @@
 ---
-slug: macsiwen资源
+slug: macsiwen-tutorial
 title: 教程类
 authors: [admin]
 tags: [欢迎, 介绍]
