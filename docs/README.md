@@ -59,7 +59,7 @@ console.log(person); // 2
 
 #### 传参/赋值
 
-![alt text](images/image-6.png)
+<!-- ![alt text](JavaScript面试突破/ch02-JavaScript数据类型/images/image-6.png) -->
 
 实际对象只有一个存储在堆内存，person和obj指向同一个对象
 
@@ -67,13 +67,13 @@ console.log(person); // 2
 
 函数传参 = 赋值 = 复制地址值 != 拷贝对象
 
-![alt text](images/image-5.png)
+![alt text](JavaScript面试突破/ch02-JavaScript数据类型/images/image-5.png)
 
 #### 执行obj.age += 1
 
 对象的地址没有变，对象的属性变成26了
 
-![alt text](images/image-7.png)
+![alt text](JavaScript面试突破/ch02-JavaScript数据类型/images/image-7.png)
 
 #### 执行obj赋值对象操作
 
@@ -83,7 +83,7 @@ console.log(person); // 2
 
 注意 const声明的值不会变不会指向新对象
 
-![alt text](images/image-8.png)
+![alt text](JavaScript面试突破/ch02-JavaScript数据类型/images/image-8.png)
 
 现在 obj 和 person指向不同的对象了
 
@@ -104,7 +104,7 @@ console.log(obj)
 
 可以有多个变量存储相同的地址值，就像多个人可以记住同一个门牌号一样。
 
-![alt text](images/image-9.png)
+![alt text](JavaScript面试突破/ch02-JavaScript数据类型/images/image-9.png)
 
 
 
