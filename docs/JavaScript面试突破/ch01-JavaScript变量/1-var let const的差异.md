@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+sidebar_label: "1-var let const的差异"
 ---
 
 
@@ -50,7 +51,7 @@ console.log(obj.prop); // 1. 打印结果是什么?
 
 obj = {}; // 2. 执行结果是什么?
 ```
-![Pasted image 20260112110033](images/Pasted image 20260112110033.png)
+![alt text](images/image-6.png)
 ##  误区1
 const声明的变量 严格说不可以重新赋值
 重新赋值就要重新开辟一块新堆内存地址

@@ -1,3 +1,9 @@
+# 启动命令
+cd /Users/johnpeng/career_data/code/openbook-baoyi && npm run start
+
+
+
+
 # prompt提示词
 
 
