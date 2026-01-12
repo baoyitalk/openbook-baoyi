@@ -1,3 +1,7 @@
+---
+sidebar_position: 0
+---
+
 # JavaScript 变量深度解析 - 第一性原理拆解
 
 > 第一章核心内容：var/let/const 差异、作用域、变量提升
@@ -168,7 +172,7 @@ num = 200; // ❌ TypeError: Assignment to constant variable
 const person = { name: 'Alice' };
 person.name = 'Bob';     // ✅ 可以修改属性
 person.age = 25;         // ✅ 可以添加属性
-console.log(person);     // { name: 'Bob', age: 25 }
+console.log(person);     // `{ name: 'Bob', age: 25 }`
 
 person = { name: 'Charlie' }; // ❌ TypeError: 不能重新赋值
 
