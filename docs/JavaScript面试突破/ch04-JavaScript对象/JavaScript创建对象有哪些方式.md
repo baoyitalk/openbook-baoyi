@@ -173,83 +173,6 @@ for (let i = 0; i < 1000; i++) {
 
 
 
-#  typeof&& instanceof
-
-
-typeof主要识别基于类型和函数， instanceof识别引用类型（泛指对象）的具体类型
-
-
-## 1- typeof：判断「基本数据类型」+ 识别函数（简单粗暴）
-
-### 核心作用
-
-专门用来快速判断**基本数据类型**，也能识别「函数」（引用类型里的特例），返回一个**字符串类型的类型名**。
-
-```js
-// 语法
-typeof 变量/值;
-
-```
-
-案例
-```
-// 1. 基本数据类型判断
-typeof 18;        // "number"
-typeof 'Person1'; // "string"
-typeof true;      // "boolean"
-typeof undefined; // "undefined"
-typeof Symbol();  // "symbol"
-typeof 123n;      // "bigint"
-typeof null;      // "object" ❌ 历史bug（记住即可，null不是对象）
-
-// 2. 引用类型判断（局限性：只能识别函数，其他引用类型都返回"object"）
-typeof { name: 'Person1' }; // "object"（无法区分普通对象/数组/日期）
-typeof [];                  // "object"（数组也返回object）
-typeof people;              // "object"（你之前的people数组，返回object）
-typeof function() {};       // "function" ✅ 唯一能精准识别的引用类型
-typeof people[0].sayHi;     // "function"（你之前的sayHi函数，返回function）
-
-```
-
-
-
-## 2- instanceof：判断「引用数据类型的具体类型」（查原型链）
-能精准区分**具体的引用类型**（数组 / 对象 / 函数 / 日期等）；
-instanceof Object 一般没错 函数也符合 数组也符合， 函数 数组都是Object的子类
-
-案例
-```js
-
-// 1. 引用类型判断（精准区分具体类型）
-const people = [];
-people instanceof Array;    // true ✅ 能判断是数组（typeof只能返回object）
-people instanceof Object;   // true ✅ 数组也是Object的子类（原型链继承）
-
-const obj = { name: 'Person1' };
-obj instanceof Object;      // true ✅ 普通对象
-obj instanceof Array;       // false ❌ 不是数组
-
-const sayHi = function() {};
-sayHi instanceof Function;  // true ✅ 函数是Function的实例
-sayHi instanceof Object;    // true ✅ 函数也是Object的子类
-
-// 2. 基本数据类型判断（局限性：完全无效）
-18 instanceof Number;       // false ❌ 基本类型的数字不是Number实例
-'Person1' instanceof String;// false ❌ 同理
-
-```
-
-### 关键特点
-
-- 优点：能精准区分**具体的引用类型**（数组 / 对象 / 函数 / 日期等）；
-- 缺点：不能判断基本数据类型；原型链可被修改，可能导致结果不准确；
-- 注意：所有引用类型都是 `Object` 的实例（所以 `xxx instanceof Object` 大概率返回 true）。
-
-
-
-
-
-
 # 谈谈Object
 
 
@@ -547,9 +470,88 @@ dog.bark();  // "woof"（自己的）
 
 ```
 
+什么时候用
 
+![](images/JavaScript创建对象有哪些方式-20260115190723.png)
 
 
 
 # 类 创建对象
+
+类用于创建对象的模板，它建立在原型上， 类是 ‘特殊的函数’， 类语法有两个组成部分：
+类表达式和类声明。
+类相比原型模式，具备原型模式的优点，代码封装更好。
+
+## 类声明方式创建一个对象
+
+```js
+
+class Person {
+
+constructor(name) {
+
+this.name = name
+
+}
+
+// 定义方法
+
+sayName() {
+
+console.log(this.name)
+
+}
+
+}
+
+const person1 = new Person('lucy');
+
+person1.sayName(); // 'lucy'
+```
+
+
+注意： 函数声明和 类声明的一个重要区别在于：函数声明会提升，类声明不会。
+
+
+## 类表达式创建对象
+
+
+类表达式可以是命名或不命名，如下用匿名类创建对象
+
+```js
+// 类表达式创建对象
+
+  
+
+let Person = class {
+
+constructor(name) {
+
+this.name = name
+
+}
+
+// 定义方法
+
+sayName() {
+
+console.log(this.name)
+
+ }
+
+}
+
+const person1 = new Person('lucy')
+
+person1.sayName(); // 'lucy'
+```
+
+
+
+
+# 四种原型继承方式 创建对象
+
+
+
+## 工厂模式创建对象
 

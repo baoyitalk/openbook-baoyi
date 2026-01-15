@@ -41,18 +41,49 @@
 // console.log(person1.name); // 'lucy'
 
 
-// create方法底层实现
 
-const person = { sayHi() { console.log('Hi'); } };
-function F() {}
-F.prototype = person;
-const obj = new F();
 
-// 验证1：obj的__proto__ → person
-console.log(obj.__proto__ === person); // true
-// 验证2：F.prototype → person
-console.log(F.prototype === person); // true
-// 验证3：person自身的__proto__ → Object.prototype（和F无关）
-console.log(person.__proto__ === Object.prototype); // true
-// 验证4：obj能继承person的方法
-obj.sayHi(); // Hi
+// // create方法底层实现
+
+// const person = { sayHi() { console.log('Hi'); } };
+// function F() {}
+// F.prototype = person;
+// const obj = new F();
+
+// // 验证1：obj的__proto__ → person
+// console.log(obj.__proto__ === person); // true
+// // 验证2：F.prototype → person
+// console.log(F.prototype === person); // true
+// // 验证3：person自身的__proto__ → Object.prototype（和F无关）
+// console.log(person.__proto__ === Object.prototype); // true
+// // 验证4：obj能继承person的方法
+// obj.sayHi(); // Hi
+
+
+// // 类声明方式创建对象
+// class Person {
+//     constructor(name) {
+//         this.name = name
+//     }
+//     // 定义方法
+//     sayName() {
+//         console.log(this.name)
+//     }
+// }
+// const person1 = new Person('lucy');
+// person1.sayName(); // 'lucy'
+
+
+// 类表达式创建对象
+
+let Person = class {
+    constructor(name) {
+        this.name = name
+    }
+    // 定义方法
+    sayName() {
+    console.log(this.name)
+ }
+}
+const person1 = new Person('lucy')
+person1.sayName(); // 'lucy'
