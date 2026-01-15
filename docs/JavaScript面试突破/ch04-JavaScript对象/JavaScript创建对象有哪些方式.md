@@ -4,6 +4,24 @@
 JavaScript中有八种数据类型，有七种基本数据类型和对象（Object），对象就是引用类型
 创建JavaScript对象的方式有8种：
 
+```
+// 引用类型（都是对象）
+let obj = {};            // 普通对象
+let arr = [];            // 数组对象
+let fn = function(){};   // 函数对象
+let date = new Date();   // 日期对象
+let reg = /abc/;         // 正则对象
+
+
+```
+**所有的构造函数 既是函数也是对象**
+**引用数据类型**：`Object`、`Array`、`Function` 等属于对象既引用数据类型也是构造函数（存储在堆内存，变量保存的是堆内存的引用地址）。
+
+
+![](images/JavaScript创建对象有哪些方式-20260115153321.png)
+
+
+
 ## 1-三种最基本方式创建JavaScript对象
 
 - Object构造函数
@@ -117,7 +135,7 @@ for (let i = 0; i < 1000; i++) {
 有原型链的世界
 
 ```js
-
+// 创建1000个人
 function Person(name) {
   this.name = name;  // 每个人有自己的名字
 }
@@ -135,4 +153,196 @@ for (let i = 0; i < 1000; i++) {
 // 节省内存：只存储1份函数
 
 ```
+
+
+
+误区1 函数本体存放在堆内存吗
+
+```
+**在 JavaScript 中，只要你创建了函数（无论以哪种方式），函数的本体就一定会被存储在堆内存中**—— 栈内存里永远只存 “指向这个堆内存地址的引用”，不会存函数本身。
+
+**“变量本身” 的理解**：你说的 “变量本身” 如果指「变量名」，那它永远在栈；如果指「变量的值」，则分类型 —— 基本类型值在栈，引用类型值（地址）在栈、本体在堆。
+**函数参数也是变量**：函数的参数变量遵循同样规则，比如 `function test(num) { }`，调用 `test(18)` 时，参数 `num`（标识符 + 18）都在栈内存。
+✅ **函数体（也就是函数的代码逻辑、函数本身）一定是存储在堆内存中的**，这是 JavaScript 内存分配的铁律，没有任何例外。
+
+```
+
+
+
+
+
+
+
+#  typeof&& instanceof
+
+
+typeof主要识别基于类型和函数， instanceof识别引用类型（泛指对象）的具体类型
+
+
+## 1- typeof：判断「基本数据类型」+ 识别函数（简单粗暴）
+
+### 核心作用
+
+专门用来快速判断**基本数据类型**，也能识别「函数」（引用类型里的特例），返回一个**字符串类型的类型名**。
+
+```js
+// 语法
+typeof 变量/值;
+
+```
+
+案例
+```
+// 1. 基本数据类型判断
+typeof 18;        // "number"
+typeof 'Person1'; // "string"
+typeof true;      // "boolean"
+typeof undefined; // "undefined"
+typeof Symbol();  // "symbol"
+typeof 123n;      // "bigint"
+typeof null;      // "object" ❌ 历史bug（记住即可，null不是对象）
+
+// 2. 引用类型判断（局限性：只能识别函数，其他引用类型都返回"object"）
+typeof { name: 'Person1' }; // "object"（无法区分普通对象/数组/日期）
+typeof [];                  // "object"（数组也返回object）
+typeof people;              // "object"（你之前的people数组，返回object）
+typeof function() {};       // "function" ✅ 唯一能精准识别的引用类型
+typeof people[0].sayHi;     // "function"（你之前的sayHi函数，返回function）
+
+```
+
+
+
+## 2- instanceof：判断「引用数据类型的具体类型」（查原型链）
+能精准区分**具体的引用类型**（数组 / 对象 / 函数 / 日期等）；
+instanceof Object 一般没错 函数也符合 数组也符合， 函数 数组都是Object的子类
+
+案例
+```js
+
+// 1. 引用类型判断（精准区分具体类型）
+const people = [];
+people instanceof Array;    // true ✅ 能判断是数组（typeof只能返回object）
+people instanceof Object;   // true ✅ 数组也是Object的子类（原型链继承）
+
+const obj = { name: 'Person1' };
+obj instanceof Object;      // true ✅ 普通对象
+obj instanceof Array;       // false ❌ 不是数组
+
+const sayHi = function() {};
+sayHi instanceof Function;  // true ✅ 函数是Function的实例
+sayHi instanceof Object;    // true ✅ 函数也是Object的子类
+
+// 2. 基本数据类型判断（局限性：完全无效）
+18 instanceof Number;       // false ❌ 基本类型的数字不是Number实例
+'Person1' instanceof String;// false ❌ 同理
+
+```
+
+### 关键特点
+
+- 优点：能精准区分**具体的引用类型**（数组 / 对象 / 函数 / 日期等）；
+- 缺点：不能判断基本数据类型；原型链可被修改，可能导致结果不准确；
+- 注意：所有引用类型都是 `Object` 的实例（所以 `xxx instanceof Object` 大概率返回 true）。
+
+
+
+
+
+
+# 谈谈Object
+
+
+## Object具备双层身份 
+既是对象也是函数， 函数是一等公民，函数也是对象
+所有的构造函数都是这样 既是函数也是对象
+
+案例
+
+```js
+// JavaScript 中的设计原则：函数是一等公民，函数也是对象
+
+// 证明1：函数可以有属性
+function myFunc() {}
+myFunc.prop = 'value';
+console.log(myFunc.prop);  // 'value'
+
+// 证明2：函数可以作为对象传递
+const funcObj = myFunc;
+console.log(typeof funcObj);  // 'function'
+console.log(funcObj instanceof Object);  // true
+
+// 证明3：Object 也遵循这个规则
+console.log(typeof Object);  // 'function' typeof可以识别基础类型 和 函数
+console.log(Object instanceof Object);  // true
+
+
+```
+
+
+Object的特殊性在于它是所有对象的祖先
+
+```js
+// Object 的特殊之处：它是所有对象的祖先
+
+// 所有对象最终都继承自 Object.prototype
+const arr = [];
+const fn = function(){};
+const date = new Date();
+
+console.log(arr.__proto__.__proto__ === Object.prototype);   // true
+console.log(fn.__proto__.__proto__ === Object.prototype);    // true
+console.log(date.__proto__.__proto__ === Object.prototype);  // true
+
+// 但 Object 本身也是对象，也继承自 Object.prototype
+console.log(Object.__proto__.__proto__ === Object.prototype);  // true
+
+```
+
+
+
+
+
+## 构造函数与实例
+
+```js
+// 实例 = 通过构造函数创建出来的对象
+
+// 例子1：数组实例
+const arr = [1, 2, 3];
+// arr 是变量名
+// [1, 2, 3] 是数组对象，是 Array 的实例
+console.log(arr instanceof Array);  // true
+
+// 例子2：日期实例
+const today = new Date();
+// today 是变量名
+// new Date() 创建的对象是 Date 的实例
+console.log(today instanceof Date);  // true
+
+// 例子3：函数实例
+const fn = function(){};
+// fn 是变量名
+// function(){} 是函数对象，是 Function 的实例
+console.log(fn instanceof Function);  // true
+
+
+```
+
+
+
+
+
+
+
+
+
+# 三种基本创建方式
+
+## Object 构造函数
+
+
+创建自定义对象可以创建Object的一个新实例，再添加属性和方法
+
+这是最基础的创建对象
 
