@@ -339,10 +339,217 @@ console.log(fn instanceof Function);  // true
 
 # 三种基本创建方式
 
-## Object 构造函数
+## 1- Object 构造函数
 
 
 创建自定义对象可以创建Object的一个新实例，再添加属性和方法
 
 这是最基础的创建对象
+
+
+```js
+
+// Object构造函数创建对象
+
+  
+
+let person = new Object();
+
+  
+
+// 添加属性
+
+person.name = "lucy";
+
+  
+
+// 添加方法
+
+person.sayName = function() {
+
+person.sayName = function() {
+
+console.log(this.name)
+
+}
+
+}
+```
+
+拆解底层实现
+
+### 本质
+- **原型继承**的核心方式
+- 原型链：`p -> Person.prototype -> Object.prototype -> null`
+
+
+
+
+
+
+## 2- 对象字面量
+
+对象字面量创建对象更为简单直接，这个例子跟上面是等价的
+
+```js
+// 对象字面量创建新对象更为简单直接
+
+  
+
+let person = {
+
+name: 'lucy',
+
+sayName() { // 直接放函数表达式
+
+console.log(this.name)
+
+}
+
+}
+```
+
+
+### 本质
+- **最直接**的创建方式
+- 原型链：`obj -> Object.prototype -> null`
+
+
+
+
+## 3- `Object.create()` 
+`Object.create()`  方法创建一个新对象，使用现有对象作为新对象的原型
+直接基于 实例 创建对象 更灵活 避免原型污染
+
+### 3.1- 案例
+
+```js
+// Object.create()创建新对象
+
+let person = {
+
+name: 'lucy',
+
+sayName() { // 直接放函数表达式
+
+console.log(this.name)
+
+}
+
+}
+
+  
+
+let person1 = Object.create(person);
+
+console.log(person1.name); // 'lucy'
+
+```
+
+### 3.2-  拆解案例 create的底层实现
+
+`F.prototype = person `  
+`person.__ptoto__ = Object.prototype` 不要混淆了则个  他们原型的本质是 普通对象
+
+```js
+
+const person = { sayHi() { console.log('Hi'); } };
+
+function F() {}
+
+F.prototype = person;
+
+const obj = new F();
+
+  
+
+// 验证1：obj的__proto__ → person
+
+console.log(obj.__proto__ === person); // true
+
+// 验证2：F.prototype → person
+
+console.log(F.prototype === person); // true
+
+// 验证3：person自身的__proto__ → Object.prototype（和F无关）
+
+console.log(person.__proto__ === Object.prototype); // true
+
+// 验证4：obj能继承person的方法
+
+obj.sayHi(); // Hi
+```
+
+ 等价于 `obj.__proto__`
+
+```
+
+- `F.prototype = person` 的作用：**把构造函数 F 的 “原型对象” 换成 person，让 new F () 创建的 obj 直接继承 person**；
+- 关键区分：
+    
+    - `obj.__proto__` → 指向 person（因为 F.prototype=person）；
+    - `person.__proto__` → 指向 Object.prototype（person 自己的原型，和 F 无关）；
+```
+
+误区:
+```
+obj.__proto__` 的唯一合法值是：**普通对象（或 null）**，永远不可能直接指向 “构造函数（函数类型）
+`F.prototype`也是普通对象 不是构造函数 
+原型链里最容易搞反的核心误区 obj.__proto__ 本来就应该指向「普通对象」（原型对象），而不是构造函数**！构造函数和 “构造函数的 prototype（原型对象）” 是完全不同的东西
+```
+
+```
+
+- 实例的 `obj.constructor` 会指向**构造函数 F**（这是因为 `person` 继承了 `Object.prototype.constructor`，最终指向创建它的构造函数）；
+- 但 `obj.__proto__` 依然指向**普通对象 person**
+  
+```
+
+
+
+
+
+
+
+
+
+### 3.2- 与 new 构造函数的区别
+![](images/JavaScript创建对象有哪些方式-20260115180403.png)
+
+### 3.3- 创建纯净对象
+**用途：** 做字典/映射时避免原型污染
+```js
+// 普通对象：继承 Object.prototype
+const obj1 = {};
+obj1.toString  // 有这个方法（继承来的）
+
+// 纯净对象：没有原型
+const obj2 = Object.create(null);
+obj2.toString  // undefined（完全干净）
+
+```
+
+
+### 3.4- 直接基于对象实例创建 原型继承
+
+
+```js
+const animal = {
+  eat() { console.log("eating"); }
+};
+
+const dog = Object.create(animal);
+dog.bark = function() { console.log("woof"); };
+
+dog.eat();   // "eating"（继承）
+dog.bark();  // "woof"（自己的）
+
+
+```
+
+
+
+
+
+# 类 创建对象
 
