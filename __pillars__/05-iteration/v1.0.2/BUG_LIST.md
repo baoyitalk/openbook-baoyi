@@ -2,6 +2,32 @@
 
 ## 已修复
 
+### BUG-002: MCP 服务无法连接
+- **状态**: ✅ 已修复
+- **发现日期**: 2026-01-20
+- **修复日期**: 2026-01-20
+- **严重程度**: 高（阻塞 AI 辅助开发）
+- **影响服务**: xianyu-memory MCP 服务器
+
+**问题描述**:
+xianyu-memory MCP 服务器出现 "Not connected" 错误，无法正常连接。
+
+**根因分析**:
+1. 进程残留：手动测试时启动的进程被挂起（suspended - tty input）但没有被完全杀掉
+2. 锁文件冲突：PID 文件 `~/.xianyu-memory-mcp.pid` 中记录的进程仍然存在
+3. UI 误导：正常状态的 stderr 日志在 Cline UI 中显示为红色
+
+**解决方案**:
+1. 使用 `kill -9` 强制杀掉残留进程
+2. 清理锁文件
+3. 移除正常状态的 stderr 日志
+
+**相关文档**:
+- 中央库 ADR：`baoyitalk-platform/__pillars__/02-architecture/decisions/ADR-001-MCP-SERVICE-MANAGEMENT.md`
+- AI 记忆库决策 ID：`7a699628-584b-40f8-b2ef-47ab8a286dfb`
+
+---
+
 ### BUG-001: MDX 行内代码花括号解析错误
 - **状态**: ✅ 已修复
 - **发现日期**: 2026-01-12
