@@ -593,7 +593,7 @@ person1.sayName(); // 'lucy'
 ```
 
 
-### 工厂模式代码示例
+#### 工厂模式代码示例
 
 ```js
 // 工厂模式：普通函数 + 手动return
@@ -612,7 +612,7 @@ const person2 = createPerson('Tom', 20);
 person1.sayName();  // 'Lucy'
 ```
 
-### 工厂模式的特点
+#### 工厂模式的特点
 
 **优点：**
 - 简单易懂，适合批量创建对象
@@ -854,7 +854,7 @@ class Person {
 
 属性 = 数据 = 需要独立 → 构造函数
 方法 = 行为 = 可以共享 → 原型
-![](images/1-JavaScript创建对象有哪些方式-20260120153625.png)
+![](images/1-JavaScript创建对象有哪些方式-20260121185914.png)
 
 
 
