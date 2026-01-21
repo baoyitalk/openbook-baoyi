@@ -11,12 +11,12 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://openbook-baoyi.vercel.app',
   // Set the /<baseUrl>/ pathname under which your site is served
   baseUrl: '/',
 
   // GitHub pages deployment config.
-  organizationName: 'your-org', // Usually your GitHub org/user name.
+  organizationName: 'baoyitalk', // Usually your GitHub org/user name.
   projectName: 'openbook-baoyi', // Usually your repo name.
 
   onBrokenLinks: 'throw',
@@ -38,12 +38,12 @@ const config = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           // Please change this to your repo.
-          editUrl: 'https://github.com/your-org/openbook-baoyi/tree/main/',
+          editUrl: 'https://github.com/baoyitalk/openbook-baoyi/tree/main/',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
-          editUrl: 'https://github.com/your-org/openbook-baoyi/tree/main/',
+          editUrl: 'https://github.com/baoyitalk/openbook-baoyi/tree/main/',
           blogTitle: '博客',
           blogDescription: '分享技术文章和学习心得',
           postsPerPage: 10,
@@ -77,7 +77,7 @@ const config = {
           },
           {to: '/blog', label: '博客', position: 'left'},
           {
-            href: 'https://github.com/your-org/openbook-baoyi',
+            href: 'https://github.com/baoyitalk/openbook-baoyi',
             label: 'GitHub',
             position: 'right',
           },
@@ -100,7 +100,7 @@ const config = {
             items: [
               {
                 label: 'GitHub',
-                href: 'https://github.com/your-org/openbook-baoyi',
+                href: 'https://github.com/baoyitalk/openbook-baoyi',
               },
             ],
           },
