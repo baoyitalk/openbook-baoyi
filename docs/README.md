@@ -17,6 +17,7 @@ cd /Users/johnpeng/career_data/code/openbook-baoyi && npm run start
 
 
 核心目标 把知识点案例的粒度拆解到你不需要记忆的程度
+拆的够细总结的够粗 深入浅出
 
 
 
