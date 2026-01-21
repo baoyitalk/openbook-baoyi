@@ -51,7 +51,7 @@ console.log(obj.prop); // 1. 打印结果是什么?
 
 obj = {}; // 2. 执行结果是什么?
 ```
-![alt text](images/image-6.png)
+![alt text](images/Pasted%20image%2020260112105632.png)
 ##  误区1
 const声明的变量 严格说不可以重新赋值
 重新赋值就要重新开辟一块新堆内存地址

@@ -18,7 +18,7 @@ let reg = /abc/;         // 正则对象
 **引用数据类型**：`Object`、`Array`、`Function` 等属于对象既引用数据类型也是构造函数（存储在堆内存，变量保存的是堆内存的引用地址）。
 
 
-![](images/JavaScript创建对象有哪些方式-20260115153321.png)
+![](images/JavaScript创建对象有哪些方式-20260119182703.png)
 
 
 
