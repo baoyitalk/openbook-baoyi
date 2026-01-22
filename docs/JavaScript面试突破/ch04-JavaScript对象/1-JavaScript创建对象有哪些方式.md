@@ -593,7 +593,7 @@ person1.sayName(); // 'lucy'
 ```
 
 
-### 工厂模式代码示例
+#### 工厂模式代码示例
 
 ```js
 // 工厂模式：普通函数 + 手动return
@@ -612,7 +612,7 @@ const person2 = createPerson('Tom', 20);
 person1.sayName();  // 'Lucy'
 ```
 
-### 工厂模式的特点
+#### 工厂模式的特点
 
 **优点：**
 - 简单易懂，适合批量创建对象
@@ -649,7 +649,7 @@ const person2 = new Person('Tom', 20);
 person1.sayName();  // 'Lucy'
 ```
 
-### new原理
+## new原理
 构造函数底层原理
 
 当执行 `new Person('Lucy', 18)` 时，JavaScript 引擎做了 4 件事：
@@ -854,7 +854,11 @@ class Person {
 
 属性 = 数据 = 需要独立 → 构造函数
 方法 = 行为 = 可以共享 → 原型
+<<<<<<< HEAD
 ![](images/6-如何实现深拷贝和浅拷贝-20260122091111.png)
+=======
+![](images/6-如何实现深拷贝和浅拷贝-20260122091130.png)
+>>>>>>> main
 
 
 
