@@ -649,7 +649,7 @@ const person2 = new Person('Tom', 20);
 person1.sayName();  // 'Lucy'
 ```
 
-### new原理
+## new原理
 构造函数底层原理
 
 当执行 `new Person('Lucy', 18)` 时，JavaScript 引擎做了 4 件事：
