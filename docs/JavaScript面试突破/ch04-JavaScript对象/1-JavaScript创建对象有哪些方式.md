@@ -400,8 +400,41 @@ console.log(person1.name); // 'lucy'
 
 ### 3.2-  拆解案例 create的底层实现
 
+
+create对象的自由属性与原型链属性
 `F.prototype = person `  
 `person.__ptoto__ = Object.prototype` 不要混淆了则个  他们原型的本质是 普通对象
+
+
+这个用Object.create(p) 创建出来的对象 原型的属性方法是继承的不是纯自己的
+
+```js
+
+let person = {
+  name: 'lucy',
+  sayName() {
+    console.log(this.name)
+  }
+}
+
+let person1 = Object.create(person);
+
+// person1 自己有什么？
+console.log(person1);                        // {}  空的！
+console.log(person1.hasOwnProperty('name'));     // false
+console.log(person1.hasOwnProperty('sayName'));  // false
+
+// 但都能访问
+console.log(person1.name);      // 'lucy' ✅
+person1.sayName();              // 'lucy' ✅
+
+```
+![](images/1-JavaScript创建对象有哪些方式-20260203180722.png)
+
+
+
+
+原型对象也是普通对象
 
 ```js
 
@@ -456,6 +489,12 @@ obj.__proto__` 的唯一合法值是：**普通对象（或 null）**，永远�
 - 但 `obj.__proto__` 依然指向**普通对象 person**
   
 ```
+
+
+
+
+
+
 
 
 
