@@ -47,7 +47,7 @@ Promise是基于回调函数的
 
 
 
-案例1：回调函数实现依次获取3个接口
+### 案例1：回调版
 
 ```
 // 场景： 依次获取3个接口
@@ -168,29 +168,62 @@ setTimeout为什么要包一层箭头函数::[x1005-setTimeout为什么要包一
 
 
 
-拆解4：
 
-### 回调函数的控制反转体现在哪里
 
-![](images/Pasted%20image%2020260227193848.png)
-我发现 外部调用主函数 没有直接给 回调函数传参 是在 主函数内部 动态把参数传给 回调函数的
-
-对，你观察得很准。
-
-```javascript
-// 调用时：回调没有传参
-getUser(callback)
-
-// 内部实现：拿到数据后，把参数"塞"给回调
-function getUser(callback) {
-  fetch('/api/user')
-    .then(res => res.json())
-    .then(data => {
-      callback(data)  // 这里才传参
-    })
+### 案例2：Promise版
+```js
+function getUser() {
+  return new Promise(resolve => {
+    setTimeout(() => resolve({ id: 1, name: '张三' }), 1000)
+  })
 }
+
+function getOrders(userId) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve(['订单1', '订单2']), 1000)
+  })
+}
+
+function getDetail(orderId) {
+  return new Promise(resolve => {
+    setTimeout(() => resolve({ price: 100 }), 1000)
+  })
+}
+
+// 使用 —— 链式调用
+getUser()
+  .then(user => {
+    console.log(user)
+    return getOrders(user.id)
+  })
+  .then(orders => {
+    console.log(orders)
+    return getDetail(orders[0])
+  })
+  .then(detail => {
+    console.log(detail)
+  })
 ```
 
+
+### 案例3: async/ await 版
+
+更直观
+```js
+async function main() {
+  const user = await getUser()
+  console.log(user)
+  
+  const orders = await getOrders(user.id)
+  console.log(orders)
+  
+  const detail = await getDetail(orders[0])
+  console.log(detail)
+}
+
+main()
+
+```
 
 
 ## 加上错误处理依次获取3个接口
@@ -332,6 +365,29 @@ Promise：错误冒泡，统一 catch，代码扁平
 
 ---
 
+
+
+
+## 回调函数的控制反转体现在哪里
+
+![](images/Pasted%20image%2020260227193848.png)
+我发现 外部调用主函数 没有直接给 回调函数传参 是在 主函数内部 动态把参数传给 回调函数的
+
+对，你观察得很准。
+
+```javascript
+// 调用时：回调没有传参
+getUser(callback)
+
+// 内部实现：拿到数据后，把参数"塞"给回调
+function getUser(callback) {
+  fetch('/api/user')
+    .then(res => res.json())
+    .then(data => {
+      callback(data)  // 这里才传参
+    })
+}
+```
 
 
 

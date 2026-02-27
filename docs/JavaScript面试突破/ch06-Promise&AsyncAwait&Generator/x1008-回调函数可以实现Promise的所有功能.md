@@ -3,14 +3,14 @@
 既然回调函数可以实现所有Promise为何还要用Promise
 
 
-|场景|回调|Promise|
-|---|---|---|
-|串行|嵌套|.then 链|
-|并行|手动计数|Promise.all|
-|竞速|手动标记|Promise.race|
-|超时|手动标记|Promise.race|
-|重试|递归回调|循环 await|
-|取消|很难|AbortController|
+| 场景  | 回调   | Promise         |     |
+| --- | ---- | --------------- | --- |
+| 串行  | 嵌套   | .then 链         |     |
+| 并行  | 手动计数 | Promise.all     |     |
+| 竞速  | 手动标记 | Promise.race    |     |
+| 超时  | 手动标记 | Promise.race    |     |
+| 重试  | 递归回调 | 循环 await        |     |
+| 取消  | 很难   | AbortController |     |
 
 好，你说得对，继续挖：
 
