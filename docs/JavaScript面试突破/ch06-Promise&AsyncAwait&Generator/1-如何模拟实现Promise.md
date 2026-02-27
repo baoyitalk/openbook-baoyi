@@ -206,7 +206,7 @@ getUser()
 ```
 
 
-### 案例3: async/ await 版
+### 案例3:  async/ await 版
 
 更直观
 ```js
