@@ -1,25 +1,30 @@
-// 1-回调函数 模拟异步读取数据
-// 模拟数据库查询， 2秒后返回结果
-function fetchUser(userId, callback) { // 主函数
-  console.log('开始查询用户...')
+// 场景： 依次获取3个接口
 
-  setTimeout(() => {
-    // 模拟查到的数据
-    const user = { id: userId, name: '张三', age: 25}
-    // 主函数调回调函数
-    callback(user)  // 查完数据了 调用回调
-  }, 2000)
 
+// 回调函数方式实现 依次获取3个接口
+
+function getUser(callback) { // 主函数getUser
+  setTimeout(() => callback({id:1, name: '张三'}), 1000)
+}
+function getOrders(userId, callback) { // 主函数getOrders
+    setTimeout(() => {
+        callback(['订单1', '订单2'])
+    }, 1000);
+}
+function getDetail(orderId, callback) {
+    setTimeout(() => {
+        callback({price: 100})
+    }, 1000);
 }
 
 
-// 使用
-
-console.log(`1.发起请求`)
-fetchUser(123, (user) => {
-    console.log('3.拿到数据：', user)
+// 使用： 嵌套地狱
+getUser((user) => { // 注意 user这个参数是在主函数回传的 这就是控制反转了 
+    console.log(user)
+    getOrders(user.id, (orders) => { // 为了演示暂时不用非空校验了
+      console.log(orders)
+      getDetail(orders[0], (detail) => {
+        console.log(detail)
+      })
+    })
 })
-console.log('2.请求已发出，继续干别的 ')
-
-
-
