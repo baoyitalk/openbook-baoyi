@@ -28,3 +28,19 @@ IIFE（立即调用函数表达式）是一个在定义时就会立即执行的 
 // 无法从外部访问变量test
 console.log(test); // 抛出错误： “Uncaught ReferenceError: test is not defined”
 ```
+
+## IIFE的变量分配
+
+IIFE分配给一个变量，不是存储IIFE本身，而是存储IIFE执行后返回的结果
+
+```js
+var result = （function （）{
+    var name = "lucy";
+    return name;
+}）();
+// IIFE执行后返回的结果
+result; // “lucy”
+```
+
+
+
