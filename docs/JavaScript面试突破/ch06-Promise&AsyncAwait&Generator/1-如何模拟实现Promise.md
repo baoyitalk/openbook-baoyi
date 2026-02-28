@@ -173,19 +173,19 @@ setTimeout为什么要包一层箭头函数::[x1005-setTimeout为什么要包一
 ```js
 function getUser() {
   return new Promise(resolve => {
-    setTimeout(() => resolve({ id: 1, name: '张三' }), 1000)
+    setTimeout(() => resolve({ id: 1, name: '张三' }), 1000) // 模拟成功拿到数据-调用回调函数将数据回传给回调函数
   })
 }
 
 function getOrders(userId) {
   return new Promise(resolve => {
-    setTimeout(() => resolve(['订单1', '订单2']), 1000)
+    setTimeout(() => resolve(['订单1', '订单2']), 1000) // 模拟成功拿到数据-调用回调函数将数据回传给回调函数
   })
 }
 
 function getDetail(orderId) {
   return new Promise(resolve => {
-    setTimeout(() => resolve({ price: 100 }), 1000)
+    setTimeout(() => resolve({ price: 100 }), 1000) // 模拟成功拿到数据-调用回调函数将数据回传给回调函数
   })
 }
 
