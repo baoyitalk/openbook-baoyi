@@ -1,36 +1,46 @@
-/* 1. 初始化全局计数器 */
+/* 1. 在根节点初始化所有层级的计数器 */
 .markdown-source-view.mod-cm6 .cm-content, 
-.markdown-rendered,
-.outline {
-    counter-reset: h1-cnt;
+.markdown-rendered {
+    counter-reset: h1-cnt h2-cnt h3-cnt h4-cnt;
 }
 
-/* 2. 处理 H1 (#) */
-h1, .HyperMD-header-1, .outline .tree-item[data-level="1"] {
-    counter-reset: h2-cnt;
+/* 2. 处理 一级标题 # (H1) */
+h1, .HyperMD-header-1 {
+    counter-reset: h2-cnt; /* 出现新 H1 时，重置下方所有 H2 */
     counter-increment: h1-cnt;
 }
-h1::before, .HyperMD-header-1::before, .outline .tree-item[data-level="1"] .tree-item-inner::before {
-    content: counter(h1-cnt) ". ";
-    color: var(--text-faint);
+h1::before, .HyperMD-header-1::before {
+    content: counter(h1-cnt) "、";
+    color: var(--text-accent);
+    margin-right: 8px;
+    font-weight: bold;
 }
 
-/* 3. 处理 H2 (##) - 核心修正点 */
-h2, .HyperMD-header-2, .outline .tree-item[data-level="2"] {
-    counter-reset: h3-cnt;
+/* 3. 处理 二级标题 ## (H2) */
+h2, .HyperMD-header-2 {
+    counter-reset: h3-cnt; /* 出现新 H2 时，重置下方所有 H3 */
     counter-increment: h2-cnt;
 }
-h2::before, .HyperMD-header-2::before, .outline .tree-item[data-level="2"] .tree-item-inner::before {
-    /* 如果没有 H1，这里只显示二级编号 (如 1.)，如果有 H1，则显示 (如 1.1) */
+h2::before, .HyperMD-header-2::before {
+    /* 核心逻辑：如果有一级标题，显示 1.1；如果没有一级标题，显示 1. */
+    content: div(counter(h1-cnt), "0") counter(h1-cnt) "." counter(h2-cnt) " "; 
+    /* 上面那行太复杂？简易版用下面这行： */
     content: counter(h2-cnt) ". "; 
-    color: var(--text-faint);
+    color: var(--text-accent);
+    margin-right: 8px;
 }
 
-/* 4. 处理 H3 (###) */
-h3, .HyperMD-header-3, .outline .tree-item[data-level="3"] {
+/* 4. 处理 三级标题 ### (H3) */
+h3, .HyperMD-header-3 {
     counter-increment: h3-cnt;
 }
-h3::before, .HyperMD-header-3::before, .outline .tree-item[data-level="3"] .tree-item-inner::before {
+h3::before, .HyperMD-header-3::before {
     content: counter(h2-cnt) "." counter(h3-cnt) " ";
     color: var(--text-faint);
+    margin-right: 8px;
+}
+
+/* 5. 额外保护：确保表格不被计数器干扰 */
+table, tr, td {
+    counter-increment: none !important;
 }
