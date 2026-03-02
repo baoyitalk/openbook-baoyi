@@ -1,12 +1,13 @@
-/* 1. 在根节点初始化所有层级的计数器 */
+/* 1. 在每个笔记的根节点初始化计数器 */
 .markdown-source-view.mod-cm6 .cm-content, 
-.markdown-rendered {
-    counter-reset: h1-cnt h2-cnt h3-cnt h4-cnt;
+.markdown-rendered,
+.markdown-preview-view {
+    counter-reset: h1-cnt 0 h2-cnt 0 h3-cnt 0 h4-cnt 0;
 }
 
-/* 2. 处理 一级标题 # (H1) */
+/* 2. 一级标题 H1 */
 h1, .HyperMD-header-1 {
-    counter-reset: h2-cnt; /* 出现新 H1 时，重置下方所有 H2 */
+    counter-reset: h2-cnt 0; 
     counter-increment: h1-cnt;
 }
 h1::before, .HyperMD-header-1::before {
@@ -16,22 +17,23 @@ h1::before, .HyperMD-header-1::before {
     font-weight: bold;
 }
 
-/* 3. 处理 二级标题 ## (H2) */
+/* 3. 二级标题 H2 */
 h2, .HyperMD-header-2 {
-    counter-reset: h3-cnt; /* 出现新 H2 时，重置下方所有 H3 */
+    counter-reset: h3-cnt 0;
     counter-increment: h2-cnt;
 }
 h2::before, .HyperMD-header-2::before {
-    /* 核心逻辑：如果有一级标题，显示 1.1；如果没有一级标题，显示 1. */
-    content: div(counter(h1-cnt), "0") counter(h1-cnt) "." counter(h2-cnt) " "; 
-    /* 上面那行太复杂？简易版用下面这行： */
-    content: counter(h2-cnt) ". "; 
+    /* 如果想要 1.1 格式（有 H1 时），用这行： */
+    content: counter(h1-cnt) "." counter(h2-cnt) " ";
+    /* 如果只想要 1. 格式（忽略 H1），用这行： */
+    /* content: counter(h2-cnt) ". "; */
     color: var(--text-accent);
     margin-right: 8px;
 }
 
-/* 4. 处理 三级标题 ### (H3) */
+/* 4. 三级标题 H3 */
 h3, .HyperMD-header-3 {
+    counter-reset: h4-cnt 0;
     counter-increment: h3-cnt;
 }
 h3::before, .HyperMD-header-3::before {
@@ -40,7 +42,17 @@ h3::before, .HyperMD-header-3::before {
     margin-right: 8px;
 }
 
-/* 5. 额外保护：确保表格不被计数器干扰 */
-table, tr, td {
+/* 5. 四级标题 H4（可选） */
+h4, .HyperMD-header-4 {
+    counter-increment: h4-cnt;
+}
+h4::before, .HyperMD-header-4::before {
+    content: counter(h2-cnt) "." counter(h3-cnt) "." counter(h4-cnt) " ";
+    color: var(--text-faint);
+    margin-right: 6px;
+}
+
+/* 6. 防止表格等元素被计数器影响 */
+table, tr, td, th {
     counter-increment: none !important;
 }
