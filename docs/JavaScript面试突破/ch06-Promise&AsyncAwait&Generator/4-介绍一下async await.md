@@ -1,8 +1,6 @@
 ---
 tags:
-  - 异步
-  - async
-  - await
+  - js面试突破
 ---
 
 # async定义 
