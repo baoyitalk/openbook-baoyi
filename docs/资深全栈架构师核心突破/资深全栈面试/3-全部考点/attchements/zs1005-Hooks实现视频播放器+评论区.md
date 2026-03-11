@@ -19,6 +19,7 @@
 # 完整代码
 
 原始版本
+使用react职责划分就很清晰了
 ```javascript
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 
