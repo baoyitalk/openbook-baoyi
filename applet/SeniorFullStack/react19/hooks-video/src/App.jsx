@@ -1,187 +1,224 @@
-import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
+import { useState } from 'react';
 import './App.css';
+import OriginalVersion from './App-Original';
+import MemoVersion from './App-Memo';
+import SplitVersion from './App-Split';
 
-function VideoPlayer() {
-  // ========== useState：保存数据，显示在页面上 ==========
+/**
+ * 主入口：三种方案对比
+ * 用于面试复习和性能优化学习
+ */
 
-  const [isPlaying, setIsPlaying] = useState(false);        // 视频是否播放
-  const [comments, setComments] = useState([]);             // 评论列表
-  const [newComment, setNewComment] = useState('');         // 新评论内容
-  const [searchKeyword, setSearchKeyword] = useState('');   // 搜索关键词
-  const [likeCount, setLikeCount] = useState(0);            // 点赞数
-
-
-  // ========== useRef：保存数据，但不触发渲染 ==========
-
-  const videoRef = useRef(null);           // 保存 video 元素
-  const inputRef = useRef(null);           // 保存 input 元素
-  const renderCountRef = useRef(0);        // 保存渲染次数
-
-
-  // ========== useEffect：数据变化后做事情 ==========
-
-  // 1. 组件挂载时，从 localStorage 获取评论
-  useEffect(() => {
-    const savedComments = localStorage.getItem('comments');
-    if (savedComments) {
-      setComments(JSON.parse(savedComments));
-    }
-  }, []);  // 空依赖，只执行一次
-
-  // 2. 评论变化时，保存到 localStorage
-  useEffect(() => {
-    if (comments.length > 0) {
-      localStorage.setItem('comments', JSON.stringify(comments));
-    }
-  }, [comments]);  // comments 变化时执行
-
-  // 3. 点赞数变化时，修改页面标题
-  useEffect(() => {
-    document.title = `${likeCount} 个赞`;
-  }, [likeCount]);
-
-  // 4. 记录渲染次数
-  useEffect(() => {
-    renderCountRef.current++;
-    console.log('组件渲染了', renderCountRef.current, '次');
-  });
-
-
-  // ========== useMemo：缓存计算结果 ==========
-
-  // 过滤评论（根据搜索关键词）
-  const filteredComments = useMemo(() => {
-    console.log('正在过滤评论...');
-    return comments.filter(comment => 
-      comment.text.includes(searchKeyword)
-    );
-  }, [comments, searchKeyword]);  // comments 或 searchKeyword 变化时重新计算
-
-
-  // ========== useCallback：缓存函数 ==========
-
-  // 播放/暂停视频
-  const togglePlay = useCallback(() => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-      }
-      setIsPlaying(!isPlaying);
-    }
-  }, [isPlaying]);
-
-  // 添加评论
-  const addComment = useCallback(() => {
-    if (newComment.trim() === '') return;
-  
-    const comment = {
-      id: Date.now(),
-      text: newComment,
-      likes: 0
-    };
-  
-    setComments([...comments, comment]);
-    setNewComment('');
-    if (inputRef.current) {
-      inputRef.current.focus();  // 添加后聚焦输入框
-    }
-  }, [comments, newComment]);
-
-  // 点赞评论
-  const likeComment = useCallback((id) => {
-    setComments(comments.map(comment => 
-      comment.id === id 
-        ? { ...comment, likes: comment.likes + 1 }
-        : comment
-    ));
-  }, [comments]);
-
-
-  // ========== 渲染 ==========
+function App() {
+  const [currentVersion, setCurrentVersion] = useState('original');
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState(true);
 
   return (
-    <div className="video-player-container">
-      <h1>React 19 Hooks 视频播放器</h1>
-      
-      {/* 视频播放器 */}
-      <div className="video-section">
-        <video 
-          ref={videoRef} 
-          src="https://www.w3schools.com/html/mov_bbb.mp4"
-          style={{ width: '100%', maxWidth: '800px', borderRadius: '8px' }}
-          controls
-        />
-        <div className="video-controls">
-          <button onClick={togglePlay} className="play-button">
-            {isPlaying ? '⏸ 暂停' : '▶️ 播放'}
+    <div style={{ padding: '20px' }}>
+      {/* 版本切换器 */}
+      <div style={{ 
+        position: 'sticky', 
+        top: 0, 
+        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', 
+        padding: '30px', 
+        borderRadius: '10px',
+        boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+        zIndex: 1000,
+        marginBottom: '30px'
+      }}>
+        <h2 style={{ 
+          marginBottom: '20px', 
+          color: 'white',
+          fontSize: '28px',
+          fontWeight: 'bold',
+          textAlign: 'center'
+        }}>
+          🚀 React 性能优化三种方案对比
+        </h2>
+        <div style={{ 
+          display: 'flex', 
+          gap: '15px', 
+          flexWrap: 'wrap',
+          justifyContent: 'center'
+        }}>
+          <button 
+            onClick={() => setCurrentVersion('original')}
+            style={{
+              padding: '15px 30px',
+              background: currentVersion === 'original' ? '#dc3545' : 'white',
+              color: currentVersion === 'original' ? 'white' : '#333',
+              border: currentVersion === 'original' ? 'none' : '2px solid #ddd',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              transition: 'all 0.3s',
+              boxShadow: currentVersion === 'original' ? '0 4px 8px rgba(220,53,69,0.3)' : 'none',
+              transform: currentVersion === 'original' ? 'scale(1.05)' : 'scale(1)'
+            }}
+          >
+            ❌ 方案0：原始版本
           </button>
           
-          <button onClick={() => setLikeCount(likeCount + 1)} className="like-button">
-            ❤️ {likeCount}
+          <button 
+            onClick={() => setCurrentVersion('memo')}
+            style={{
+              padding: '15px 30px',
+              background: currentVersion === 'memo' ? '#28a745' : 'white',
+              color: currentVersion === 'memo' ? 'white' : '#333',
+              border: currentVersion === 'memo' ? 'none' : '2px solid #ddd',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              transition: 'all 0.3s',
+              boxShadow: currentVersion === 'memo' ? '0 4px 8px rgba(40,167,69,0.3)' : 'none',
+              transform: currentVersion === 'memo' ? 'scale(1.05)' : 'scale(1)'
+            }}
+          >
+            ✅ 方案1：React.memo
+          </button>
+          
+          <button 
+            onClick={() => setCurrentVersion('split')}
+            style={{
+              padding: '15px 30px',
+              background: currentVersion === 'split' ? '#ffc107' : 'white',
+              color: currentVersion === 'split' ? '#333' : '#333',
+              border: currentVersion === 'split' ? 'none' : '2px solid #ddd',
+              borderRadius: '10px',
+              cursor: 'pointer',
+              fontWeight: 'bold',
+              fontSize: '16px',
+              transition: 'all 0.3s',
+              boxShadow: currentVersion === 'split' ? '0 4px 8px rgba(255,193,7,0.3)' : 'none',
+              transform: currentVersion === 'split' ? 'scale(1.05)' : 'scale(1)'
+            }}
+          >
+            ⭐ 方案2：组件拆分（推荐）
           </button>
         </div>
-      </div>
-    
-      {/* 搜索框 */}
-      <div className="search-section">
-        <input
-          value={searchKeyword}
-          onChange={(e) => setSearchKeyword(e.target.value)}
-          placeholder="🔍 搜索评论..."
-          className="search-input"
-        />
-      </div>
-    
-      {/* 添加评论 */}
-      <div className="comment-input-section">
-        <input
-          ref={inputRef}
-          value={newComment}
-          onChange={(e) => setNewComment(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && addComment()}
-          placeholder="写评论..."
-          className="comment-input"
-        />
-        <button onClick={addComment} className="send-button">发送</button>
-      </div>
-    
-      {/* 评论列表 */}
-      <div className="comments-section">
-        <h3>评论 ({filteredComments.length})</h3>
-        {filteredComments.length === 0 ? (
-          <p className="no-comments">暂无评论，快来抢沙发吧！</p>
-        ) : (
-          filteredComments.map(comment => (
-            <CommentItem 
-              key={comment.id} 
-              comment={comment} 
-              onLike={likeComment}
-            />
-          ))
+        
+        {/* 折叠按钮 */}
+        <button
+          onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+          style={{
+            marginTop: '15px',
+            padding: '8px 20px',
+            background: 'rgba(255,255,255,0.2)',
+            color: 'white',
+            border: '1px solid rgba(255,255,255,0.3)',
+            borderRadius: '20px',
+            cursor: 'pointer',
+            fontSize: '14px',
+            fontWeight: 'bold',
+            transition: 'all 0.3s',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            margin: '15px auto 0'
+          }}
+        >
+          {isDescriptionOpen ? '▲ 收起说明' : '▼ 展开说明'}
+        </button>
+
+        {/* 说明文字 - 可折叠 */}
+        {isDescriptionOpen && (
+          <div style={{ 
+            marginTop: '15px', 
+            padding: '20px', 
+            background: 'rgba(255,255,255,0.95)', 
+            borderRadius: '10px',
+            fontSize: '15px',
+            lineHeight: '1.8',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            animation: 'slideDown 0.3s ease-out'
+          }}>
+          {currentVersion === 'original' && (
+            <div>
+              <div style={{ 
+                fontSize: '18px', 
+                fontWeight: 'bold', 
+                marginBottom: '10px',
+                color: '#dc3545'
+              }}>
+                ❌ 方案0：原始版本
+              </div>
+              <div style={{ 
+                padding: '15px',
+                background: '#fff3cd',
+                borderLeft: '4px solid #ffc107',
+                borderRadius: '5px'
+              }}>
+                <p style={{ margin: '0 0 10px 0', fontWeight: 'bold' }}>
+                  ⚠️ 问题：所有状态在根组件，任何状态变化都会导致整个组件树重新渲染
+                </p>
+                <p style={{ margin: '0', color: '#666' }}>
+                  💡 测试方法：打开控制台，点击点赞按钮，观察所有组件都会重新渲染
+                </p>
+              </div>
+            </div>
+          )}
+          {currentVersion === 'memo' && (
+            <div>
+              <div style={{ 
+                fontSize: '18px', 
+                fontWeight: 'bold', 
+                marginBottom: '10px',
+                color: '#28a745'
+              }}>
+                ✅ 方案1：React.memo 优化
+              </div>
+              <div style={{ 
+                padding: '15px',
+                background: '#d4edda',
+                borderLeft: '4px solid #28a745',
+                borderRadius: '5px'
+              }}>
+                <p style={{ margin: '0 0 10px 0', fontWeight: 'bold' }}>
+                  ✨ 优化：使用 React.memo 包裹子组件，配合 useCallback 保持函数引用稳定
+                </p>
+                <p style={{ margin: '0', color: '#666' }}>
+                  💡 测试方法：打开控制台，点击点赞按钮，CommentSection 不会重新渲染
+                </p>
+              </div>
+            </div>
+          )}
+          {currentVersion === 'split' && (
+            <div>
+              <div style={{ 
+                fontSize: '18px', 
+                fontWeight: 'bold', 
+                marginBottom: '10px',
+                color: '#ff6b35'
+              }}>
+                ⭐ 方案2：组件拆分（推荐）
+              </div>
+              <div style={{ 
+                padding: '15px',
+                background: '#fff3e0',
+                borderLeft: '4px solid #ff6b35',
+                borderRadius: '5px'
+              }}>
+                <p style={{ margin: '0 0 10px 0', fontWeight: 'bold' }}>
+                  🎯 最佳实践：状态下沉到各自组件，天然隔离，无需 memo
+                </p>
+                <p style={{ margin: '0', color: '#666' }}>
+                  💡 测试方法：打开控制台，点击点赞按钮，只有 VideoSection 重新渲染
+                </p>
+              </div>
+            </div>
+          )}
+          </div>
         )}
       </div>
-      
-      <div className="debug-info">
-        <small>渲染次数: {renderCountRef.current}</small>
-      </div>
+
+      {/* 渲染对应版本 */}
+      {currentVersion === 'original' && <OriginalVersion />}
+      {currentVersion === 'memo' && <MemoVersion />}
+      {currentVersion === 'split' && <SplitVersion />}
     </div>
   );
 }
 
-// 评论组件
-function CommentItem({ comment, onLike }) {
-  console.log('CommentItem 渲染:', comment.text);
-
-  return (
-    <div className="comment-item">
-      <p className="comment-text">{comment.text}</p>
-      <button onClick={() => onLike(comment.id)} className="comment-like-button">
-        👍 {comment.likes}
-      </button>
-    </div>
-  );
-}
-
-export default VideoPlayer;
+export default App;

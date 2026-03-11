@@ -18,6 +18,7 @@
 
 # 完整代码
 
+原始版本
 ```javascript
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 
@@ -182,6 +183,15 @@ export default VideoPlayer;
 ```
 
 ^0h74nz
+
+
+
+
+
+
+
+
+
 
 ---
 
