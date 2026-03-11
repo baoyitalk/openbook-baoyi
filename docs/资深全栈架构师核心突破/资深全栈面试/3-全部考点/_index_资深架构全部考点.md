@@ -56,6 +56,8 @@ tags:
 |     |                 |                                                                                               |                                      |
 | 2   | React渲染的触发来源有哪些 | [zs1011-React组件渲染的输入源](资深全栈架构师核心突破/资深全栈面试/3-全部考点/attchements/zs1011-React组件渲染的输入源.md#^rxihjd) | 输入props/state/context，输出UI描述（React元素 |
 |     |                 |                                                                                               |                                      |
+| 3   | 封装一个防抖组件        | [react封装防抖组件](资深全栈架构师核心突破/资深全栈面试/3-全部考点/防抖%20节流.md#^g1pmfg)                                   |                                      |
+|     |                 |                                                                                               |                                      |
 |     |                 |                                                                                               |                                      |
 
 
@@ -67,21 +69,23 @@ tags:
 
 ## React Hooks
 
-|     | Q:                                                       | A:                                                                                                       |                                                | 验收标准   |
-| --- | -------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- | ---------------------------------------------- | ------ |
-| 1   | 为什么React Hook替代this使用                                    | [zs1002-Hook替代this](attchements/zs1002-Hook替代this.md)                                                    | 函数组件与类组件的区别 ，函数组件用闭包和全栈链表替代this                |        |
-|     |                                                          | [zs1003-函数编程 编程范式](attchements/zs1003-函数编程%20编程范式.md)                                                    | hook基于函数组件，函数组件没有实例                            |        |
-| 2   | Hooks为什么不能嵌套if                                           | [zs1009-Hooks为什么不能嵌套if](attchements/zs1009-Hooks为什么不能嵌套if.md)                                            |                                                |        |
-|     |                                                          |                                                                                                          |                                                |        |
-| 3   | useState useEffect useMemo useCallback useRef常用hooks使用场景 | [Hooks实现视频播放器+评论区](资深全栈架构师核心突破/资深全栈面试/3-全部考点/attchements/zs1005-Hooks实现视频播放器+评论区.md#^0h74nz)             | 视频播放器+评论区举例                                    | 聊透使用场景 |
-|     |                                                          |                                                                                                          |                                                |        |
-| 4   | Hooks的主要作用是什么                                            | [Hooks对比](Hooks体系.md#^g893cg)                                                                            |                                                |        |
-|     |                                                          |                                                                                                          |                                                |        |
-| 5   | useMemo useCallback底层逻辑是引用标识吗                            | [zs1010- useMemo useCallback底层逻辑 引用标识](attchements/zs1010-%20useMemo%20useCallback底层逻辑%20引用标识.md)        | 避免子组件不必要的渲染，组件本身就是函数，state尽可能在组件树末端而不是越靠近root端 |        |
-|     |                                                          | [组件组合+状态下沉](资深全栈架构师核心突破/资深全栈面试/3-全部考点/attchements/zs1010-%20useMemo%20useCallback底层逻辑%20引用标识.md#^3bsf5t) | 跳出缓存的 根本解                                      |        |
-|     |                                                          |                                                                                                          |                                                |        |
-| 6   | React闭包陷阱怎么解决                                            | [闭包陷阱](attchements/zs1012-React闭包陷阱.md#^pv0tsi)                                                          | 1、加依赖项 2、函数式 3、useRef 包装，保证闭包每次都是新的，所以能拿到最新值   |        |
-|     |                                                          |                                                                                                          |                                                |        |
+|     | Q:                            | A:                                                                                                       |                                                             | 验收标准   |
+| --- | ----------------------------- | -------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- | ------ |
+| 1   | 为什么React Hook替代this使用         | [zs1002-Hook替代this](attchements/zs1002-Hook替代this.md)                                                    | 函数组件与类组件的区别 ，函数组件用闭包和全栈链表替代this                             |        |
+|     |                               | [zs1003-函数编程 编程范式](attchements/zs1003-函数编程%20编程范式.md)                                                    | hook基于函数组件，函数组件没有实例                                         |        |
+| 2   | Hooks为什么不能嵌套if                | [zs1009-Hooks为什么不能嵌套if](attchements/zs1009-Hooks为什么不能嵌套if.md)                                            |                                                             |        |
+|     |                               |                                                                                                          |                                                             |        |
+| 3   | Hooks模拟视频播放器场景                | [Hooks实现视频播放器+评论区](资深全栈架构师核心突破/资深全栈面试/3-全部考点/attchements/zs1005-Hooks实现视频播放器+评论区.md#^0h74nz)             | 视频播放器+评论区举例 useState useEffect useMemo useCallback useRef常用 | 聊透使用场景 |
+|     |                               |                                                                                                          |                                                             |        |
+| 4   | Hooks的主要作用是什么                 | [Hooks对比](Hooks体系.md#^g893cg)                                                                            |                                                             |        |
+|     |                               |                                                                                                          |                                                             |        |
+| 5   | useMemo useCallback底层逻辑是引用标识吗 | [zs1010- useMemo useCallback底层逻辑 引用标识](attchements/zs1010-%20useMemo%20useCallback底层逻辑%20引用标识.md)        | 避免子组件不必要的渲染，组件本身就是函数，state尽可能在组件树末端而不是越靠近root端              |        |
+|     |                               | [组件组合+状态下沉](资深全栈架构师核心突破/资深全栈面试/3-全部考点/attchements/zs1010-%20useMemo%20useCallback底层逻辑%20引用标识.md#^3bsf5t) | 跳出缓存的 根本解                                                   |        |
+|     |                               |                                                                                                          |                                                             |        |
+| 6   | React闭包陷阱怎么解决                 | [闭包陷阱](attchements/zs1012-React闭包陷阱.md#^pv0tsi)                                                          | 1、加依赖项 2、函数式 3、useRef 包装，保证闭包每次都是新的，所以能拿到最新值                |        |
+|     |                               |                                                                                                          |                                                             |        |
+|     |                               |                                                                                                          |                                                             |        |
+|     |                               |                                                                                                          |                                                             |        |
 
 
 
