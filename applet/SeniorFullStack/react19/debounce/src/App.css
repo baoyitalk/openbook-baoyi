@@ -159,6 +159,17 @@ body {
   height: 510px;
   overflow-y: auto;
   padding: 4px;
+  position: relative;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  transition: border-color 0.05s;
+}
+
+/* 视觉反馈：每次 checkScrollBottom 执行时闪烁红色边框
+   无节流时疯狂闪烁（像警报灯），节流时偶尔闪一下 */
+.product-scroll.flash-overlay {
+  border-color: rgba(231, 76, 60, 0.7);
+  box-shadow: inset 0 0 20px rgba(231, 76, 60, 0.15);
 }
 
 .product-grid {

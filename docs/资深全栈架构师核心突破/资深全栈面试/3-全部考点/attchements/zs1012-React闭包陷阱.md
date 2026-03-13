@@ -238,6 +238,12 @@ useEffect(() => {
 
 ## 第五层：三种破解方案的第一性原理
 
+闭包陷阱出现的根因在于：
+
+**inner函数锁住外层outer函数的变量是锁的被创建时所在环境的变量；**
+
+
+
 ### 方案 1：加依赖项
 
 ```javascript
@@ -287,6 +293,7 @@ useEffect(() => {
 ---
 
 ### 方案 3：useRef 绕过快照机制
+防抖节流最优解
 
 ```javascript
 function Counter() {

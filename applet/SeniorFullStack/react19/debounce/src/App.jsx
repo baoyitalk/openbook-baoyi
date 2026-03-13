@@ -4,6 +4,20 @@ import { useThrottle } from "./hooks/useThrottle";
 import { fetchSuggestions, fetchProducts } from "./mock";
 import "./App.css";
 
+/**
+ * 模拟重计算 — 让节流效果可视化
+ * 同步循环 50 万次数学运算，单次约 15-30ms
+ * 关闭节流时每次 scroll 都执行 → 通过视觉反馈（红色闪烁）体现卡顿
+ * 开启节流时 300ms 一次 → 闪烁极少，体感流畅
+ */
+function heavyCompute() {
+  let sum = 0;
+  for (let i = 0; i < 500000; i++) {
+    sum += Math.sqrt(i) * Math.sin(i);
+  }
+  return sum;
+}
+
 /** 根据窗口宽度计算商品列表列数 */
 function calcColumns(width) {
   if (width >= 1200) return 4;
@@ -89,14 +103,28 @@ export default function App() {
   // 统计条数据
   const [statsRaw, setStatsRaw] = useState(0);
   const [statsExec, setStatsExec] = useState(0);
+  const [lastCost, setLastCost] = useState(0);
+  // 视觉反馈：每次执行 checkScrollBottom 时闪烁红色遮罩
+  const [flashActive, setFlashActive] = useState(false);
+  const flashTimerRef = useRef(null);
 
   // 触底检测 + 商品曝光埋点（节流和非节流共用）
   const checkScrollBottom = () => {
+    const t0 = performance.now();
     scrollThrottleCountRef.current++;
     setStatsExec(scrollThrottleCountRef.current);
     const el = listRef.current;
     if (!el) return;
-    const tag = throttleEnabled ? "[节流]" : "[无节流]";
+    const tag = throttleEnabledRef.current ? "[节流]" : "[无节流]";
+
+    // ====== 模拟重计算（让节流效果肉眼可见）======
+    heavyCompute();
+
+    // ====== 视觉反馈：红色闪烁 ======
+    // 每次执行都闪一下，无节流时疯狂闪烁 vs 节流时偶尔闪一下
+    setFlashActive(true);
+    clearTimeout(flashTimerRef.current);
+    flashTimerRef.current = setTimeout(() => setFlashActive(false), 80);
 
     // ====== 商品曝光检测（模拟真实业务埋点）======
     // 遍历所有商品卡片，用 getBoundingClientRect 判断是否在可视区
@@ -117,17 +145,18 @@ export default function App() {
         newlyExposed.push(card.textContent?.split("\n")[0] || `#${productId}`);
       }
     });
-    if (newlyExposed.length > 0) {
-      console.log(
-        `${tag} 曝光埋点: 新增 ${newlyExposed.length} 件商品 (累计 ${exposedIdsRef.current.size} 件)`
-      );
-    }
+    // 每次都打印曝光状态（无条件），避免高频场景下曝光日志被淹没或截断
+    console.log(
+      `${tag} 曝光检测: 新增 ${newlyExposed.length} 件, 累计 ${exposedIdsRef.current.size} 件`
+    );
 
     // ====== 触底检测 ======
     const { scrollTop, scrollHeight, clientHeight } = el;
     const nearBottom = scrollHeight - scrollTop - clientHeight < 100;
+    const cost = (performance.now() - t0).toFixed(1);
+    setLastCost(Number(cost));
     console.log(
-      `${tag} 滚动检测 第${scrollThrottleCountRef.current}次 | 曝光${exposedIdsRef.current.size}件 (原始已触发${scrollRawCountRef.current}次)`
+      `${tag} 滚动检测 第${scrollThrottleCountRef.current}次 耗时${cost}ms | 曝光${exposedIdsRef.current.size}件 (原始已触发${scrollRawCountRef.current}次)`
     );
     if (nearBottom && hasMoreRef.current && !loadingRef.current) {
       console.log(`${tag} 触底！加载第 ${pageRef.current + 1} 页`);
@@ -144,9 +173,15 @@ export default function App() {
       throttledScroll();
     } else {
       // 不节流：每次 scroll 事件都执行检测
+      // 注意：这里直接调用，不经过节流，每次 scroll 都会执行 heavyCompute + 曝光检测
       checkScrollBottom();
     }
   };
+
+  // 用 ref 跟踪 throttleEnabled，让 checkScrollBottom 闭包内能读到最新值
+  const throttleEnabledRef = useRef(throttleEnabled);
+  throttleEnabledRef.current = throttleEnabled;
+
 
   // 切换模式时重置计数
   const toggleThrottle = () => {
@@ -262,7 +297,7 @@ export default function App() {
 
           {/* 商品列表：外层固定高度滚动容器，内层 grid 自然撑开 */}
           <div
-            className="product-scroll"
+            className={`product-scroll ${flashActive ? "flash-overlay" : ""}`}
             ref={listRef}
             onScroll={handleScroll}
           >
@@ -305,7 +340,7 @@ export default function App() {
           {/* 统计条：节流效果一目了然 */}
           {statsRaw > 0 && (
             <div className="stats-bar">
-              原始触发: <strong>{statsRaw}</strong> 次 | 实际执行: <strong>{statsExec}</strong> 次 | 节省: <strong>{statsRaw > 0 ? Math.round((1 - statsExec / statsRaw) * 100) : 0}%</strong>
+              原始触发: <strong>{statsRaw}</strong> 次 | 实际执行: <strong>{statsExec}</strong> 次 | 节省: <strong>{statsRaw > 0 ? Math.round((1 - statsExec / statsRaw) * 100) : 0}%</strong> | 单次耗时: <strong>{lastCost}</strong>ms
             </div>
           )}
           <div className="log-body">
@@ -320,7 +355,7 @@ export default function App() {
                 className={`log-item ${
                   log.includes("[防抖]")
                     ? "log-debounce"
-                    : log.includes("曝光埋点")
+                    : log.includes("曝光检测")
                     ? "log-exposure"
                     : log.includes("[节流]") || log.includes("[无节流]")
                     ? "log-throttle"
