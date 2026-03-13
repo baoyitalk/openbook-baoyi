@@ -1,7 +1,7 @@
 {
   "name": "debounce-throttle-demo",
   "version": "1.0.0",
-  "description": "React 19 + TypeScript 防抖节流面试实战 — 商品搜索页",
+  "description": "React 19 防抖节流面试实战 — 商品搜索页",
   "private": true,
   "type": "module",
   "scripts": {
@@ -14,10 +14,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@types/react": "^19.0.0",
-    "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
-    "typescript": "^5.7.0",
     "vite": "^6.0.3"
   }
 }

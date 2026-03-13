@@ -11,16 +11,13 @@ import { useRef, useEffect, useCallback } from "react";
  * - callbackRef：始终指向最新的回调函数，解决闭包陷阱
  *   （如果用 useCallback 包裹 fn，闭包会捕获旧的 state/props）
  *
- * @param fn 需要防抖的函数
- * @param delay 延迟时间（ms）
- * @returns [debouncedFn, cancel] — 防抖后的函数 + 手动取消方法
+ * @param {Function} fn 需要防抖的函数
+ * @param {number} delay 延迟时间（ms）
+ * @returns {[Function, Function]} [debouncedFn, cancel] — 防抖后的函数 + 手动取消方法
  */
-export function useDebounce<T extends (...args: unknown[]) => void>(
-  fn: T,
-  delay: number
-): [(...args: Parameters<T>) => void, () => void] {
+export function useDebounce(fn, delay) {
   // 用 useRef 存储定时器，组件重渲染不会丢失
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef(null);
   // 用 useRef 存储最新回调，避免闭包陷阱
   const callbackRef = useRef(fn);
 
@@ -48,7 +45,7 @@ export function useDebounce<T extends (...args: unknown[]) => void>(
 
   // 防抖核心逻辑
   const debouncedFn = useCallback(
-    (...args: Parameters<T>) => {
+    (...args) => {
       // 每次调用先清除上一次定时器
       if (timerRef.current) {
         clearTimeout(timerRef.current);

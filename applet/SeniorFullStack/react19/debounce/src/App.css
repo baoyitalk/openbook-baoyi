@@ -132,13 +132,38 @@ body {
   color: #e67e22;
 }
 
-/* Product List */
-.product-list {
-  display: grid;
-  gap: 12px;
-  height: 55vh;
+.toggle-btn {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 2px solid #ccc;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s;
+  background: #fff;
+}
+
+.toggle-on {
+  border-color: #4caf50;
+  color: #4caf50;
+}
+
+.toggle-off {
+  border-color: #e74c3c;
+  color: #e74c3c;
+  background: #fef0f0;
+}
+
+/* Product List — 外层固定高度滚动容器，内层 grid 自然撑开 */
+.product-scroll {
+  height: 510px;
   overflow-y: auto;
   padding: 4px;
+}
+
+.product-grid {
+  display: grid;
+  gap: 12px;
 }
 
 .product-card {
@@ -218,6 +243,21 @@ body {
   font-weight: 600;
 }
 
+/* 统计条 */
+.stats-bar {
+  padding: 8px 16px;
+  background: #0f3460;
+  color: #e0e0e0;
+  font-size: 12px;
+  font-family: "SF Mono", "Fira Code", monospace;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stats-bar strong {
+  color: #ffd700;
+  font-size: 14px;
+}
+
 .log-body {
   flex: 1;
   padding: 8px 12px;
@@ -250,6 +290,10 @@ body {
 
 .log-load {
   color: #81c784;
+}
+
+.log-exposure {
+  color: #ce93d8;
 }
 
 /* Footer Table */

@@ -1,13 +1,7 @@
 /** 模拟商品数据 */
-export interface Product {
-  id: number;
-  name: string;
-  price: number;
-  category: string;
-}
 
 // 基础商品模板
-const BASE_PRODUCTS: Product[] = [
+const BASE_PRODUCTS = [
   { id: 1, name: "iPhone 16 Pro Max", price: 9999, category: "手机" },
   { id: 2, name: "iPhone 16 Pro", price: 8999, category: "手机" },
   { id: 3, name: "iPhone 16", price: 6999, category: "手机" },
@@ -61,7 +55,7 @@ const BASE_PRODUCTS: Product[] = [
 ];
 
 // 生成 100 条商品数据（基础 50 条 + 变体 50 条）
-const PRODUCTS: Product[] = [
+const PRODUCTS = [
   ...BASE_PRODUCTS,
   ...BASE_PRODUCTS.map((p, i) => ({
     ...p,
@@ -72,7 +66,7 @@ const PRODUCTS: Product[] = [
 ];
 
 /** 模拟搜索联想 — 延迟 200ms 返回 */
-export function fetchSuggestions(keyword: string): Promise<string[]> {
+export function fetchSuggestions(keyword) {
   return new Promise((resolve) => {
     setTimeout(() => {
       if (!keyword.trim()) {
@@ -89,10 +83,7 @@ export function fetchSuggestions(keyword: string): Promise<string[]> {
 }
 
 /** 模拟分页加载商品 — 延迟 300ms 返回 */
-export function fetchProducts(
-  page: number,
-  pageSize: number = 8
-): Promise<{ data: Product[]; hasMore: boolean }> {
+export function fetchProducts(page, pageSize = 12) {
   return new Promise((resolve) => {
     setTimeout(() => {
       const start = (page - 1) * pageSize;

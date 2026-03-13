@@ -11,19 +11,16 @@ import { useRef, useEffect, useCallback } from "react";
  * - 定时器版：第一次延迟执行，最后一次一定执行
  * - 本实现采用「时间戳 + 尾调用」结合版，兼顾两者优点
  *
- * @param fn 需要节流的函数
- * @param delay 间隔时间（ms）
- * @returns [throttledFn, cancel]
+ * @param {Function} fn 需要节流的函数
+ * @param {number} delay 间隔时间（ms）
+ * @returns {[Function, Function]} [throttledFn, cancel]
  */
-export function useThrottle<T extends (...args: unknown[]) => void>(
-  fn: T,
-  delay: number
-): [(...args: Parameters<T>) => void, () => void] {
+export function useThrottle(fn, delay) {
   const callbackRef = useRef(fn);
   // 上次执行的时间戳
   const lastRunRef = useRef(0);
   // 尾调用定时器（保证最后一次触发也能执行）
-  const trailingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const trailingTimerRef = useRef(null);
 
   useEffect(() => {
     callbackRef.current = fn;
@@ -46,7 +43,7 @@ export function useThrottle<T extends (...args: unknown[]) => void>(
   }, []);
 
   const throttledFn = useCallback(
-    (...args: Parameters<T>) => {
+    (...args) => {
       const now = Date.now();
       const elapsed = now - lastRunRef.current;
 
