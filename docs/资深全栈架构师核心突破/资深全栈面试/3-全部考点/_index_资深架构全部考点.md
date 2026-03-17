@@ -63,8 +63,8 @@ tags:
 | 4   | React闭包陷阱怎么解决                    | [闭包陷阱](attchements/zs1012-React闭包陷阱.md#^pv0tsi)                                               | 1、加依赖项 2、函数式 3、useRef 包装，保证闭包每次都是新的，所以能拿到最新值                 |
 |     |                                  | [useRef解决闭包陷阱](attchements/zs1020-useRef解决闭包陷阱.md)                                            | useRef保证还是同一个引用地址只是内容是最新的，保证react渲染拿到最新的state值，useRef就是闭包刚需  |
 |     |                                  | [闭包陷阱出现的根因](资深全栈架构师核心突破/资深全栈面试/3-全部考点/attchements/zs1020-useRef解决闭包陷阱.md#^29jn85)             | 闭包环境inner函数不仅捕获还锁住了外层outer函数作用域的变量count，而且记住的时第一次创建时的所在环境的变量 |
-|     | 合成事件与原生事件                        | [[zs1026-rect合成事件]]                                                                           |                                                              |
-|     | React冒泡到root节点才监听还是在button子节点就监听 | [[zs1027-react事件监听机制]]                                                                        | 不用担心监听的节点冒泡多少个层级 节省了几千监听器 人类感知不到微秒                           |
+|     | 合成事件与原生事件                        | [zs1026-rect合成事件](./zs1026-rect合成事件.md)                                                                           |                                                              |
+|     | React冒泡到root节点才监听还是在button子节点就监听 | [zs1027-react事件监听机制](./zs1027-react事件监听机制.md)                                                                        | 不用担心监听的节点冒泡多少个层级 节省了几千监听器 人类感知不到微秒                           |
 |     |                                  |                                                                                               |                                                              |
 
 
@@ -151,8 +151,8 @@ React Hooks
 | 5   | fiber架构体现在哪里                                                   | [fiber主动使用+隐式使用](资深全栈架构师核心突破/资深全栈面试/3-全部考点/attchements/zs1021-万人通讯录项目拆解.md#^p8ity7)                             | 主动使用：startTransition：输入框流畅，列表异步更新（Fiber 时间切片）                 |
 | 6   | 防抖节流可以替代fiber架构吗                                               | [zs1022-防抖节流与fiber架构解决不同层次性能问题](资深全栈架构师核心突破/资深全栈面试/3-全部考点/attchements/zs1022-防抖节流与fiber架构解决不同层次性能问题.md#^5qsdsa) | 两者解决的层次不同  ，频繁触发后执行次数和单次性能                                    |
 |     |                                                                |                                                                                                                 |                                                               |
-| 7   | diff算法的底层逻辑是什么                                                 | [[zs1024-diff算法底层是key替代index下标减少dom操作]]                                                                         |                                                               |
-| 8   | diff与fiber架构关系是什么                                              | [[zs1025-diff与fiber架构关系与触发时机]]                                                                                  | 在fiber架构的协调阶段 进行diff来标记增删改 ，key在这一步起关键作用                      |
+| 7   | diff算法的底层逻辑是什么                                                 | [zs1024-diff算法底层是key替代index下标减少dom操作](./zs1024-diff算法底层是key替代index下标减少dom操作.md)                                                                         |                                                               |
+| 8   | diff与fiber架构关系是什么                                              | [zs1025-diff与fiber架构关系与触发时机](./zs1025-diff与fiber架构关系与触发时机.md)                                                                                  | 在fiber架构的协调阶段 进行diff来标记增删改 ，key在这一步起关键作用                      |
 |     |                                                                |                                                                                                                 |                                                               |
 |     |                                                                |                                                                                                                 |                                                               |
 

@@ -55,7 +55,7 @@ JavaScript中对象就是属性的集合 + 原型链
 对象 =  {
   自有属性 (存储在对象本身)
   +
-  原型链属性（[[Prototype]] 链接 指向另一个对象）
+  原型链属性（[Prototype](./Prototype.md) 链接 指向另一个对象）
 }
 ```
 
@@ -64,7 +64,7 @@ JavaScript中对象就是属性的集合 + 原型链
 const obj = { name: 'Alice' };
 
 // ❌ 你看不到的（内部表示）
-// [[Prototype]] ← 这是 ECMAScript 规范的内部插槽，代码无法直接访问
+// [Prototype](./Prototype.md) ← 这是 ECMAScript 规范的内部插槽，代码无法直接访问
 
 // ✅ 你能看到的（实际访问方式）
 console.log(obj.__proto__);              // Object.prototype（非标准但可用）

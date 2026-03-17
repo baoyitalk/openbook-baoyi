@@ -1,0 +1,16 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# 自动转换 Wikilinks 为标准 Markdown 链接
+echo "🔄 Converting Wikilinks to Markdown links..."
+
+# 使用 sed 转换 [[wikilink]] 为 [wikilink](./wikilink.md)
+find docs -name "*.md" -type f -exec sed -i '' 's/\[\[\([^]|]*\)\]\]/[\1](.\/\1.md)/g' {} \;
+
+# 转换 [[wikilink|text]] 为 [text](./wikilink.md)
+find docs -name "*.md" -type f -exec sed -i '' 's/\[\[\([^]|]*\)|\([^]]*\)\]\]/[\2](.\/\1.md)/g' {} \;
+
+echo "✅ Wikilinks conversion completed"
+
+# 添加转换后的文件
+git add docs/

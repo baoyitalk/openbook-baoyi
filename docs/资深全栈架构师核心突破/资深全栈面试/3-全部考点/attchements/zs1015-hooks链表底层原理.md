@@ -61,11 +61,11 @@ const [comments, setComments] = useState([]);
 │ 0x999999     comments数组（空数组）                                                       │
 │                                                                                            │
 │ 0x123456     setIsPlaying函数对象                                                          │
-│              ├─ [[scope]]: 绑定Hook节点1（0xABCDEF）                                       │
+│              ├─ [scope](./scope.md): 绑定Hook节点1（0xABCDEF）                                       │
 │              └─ 逻辑：修改Hook节点1的memoizedState                                         │
 │                                                                                            │
 │ 0x789789     setComments函数对象                                                           │
-│              ├─ [[scope]]: 绑定Hook节点2（0xGHIJKL）                                       │
+│              ├─ [scope](./scope.md): 绑定Hook节点2（0xGHIJKL）                                       │
 │              └─ 逻辑：修改Hook节点2的memoizedState                                         │
 └─────────────────────────────────────────────────────────────────────────────────────────────┘
 ```

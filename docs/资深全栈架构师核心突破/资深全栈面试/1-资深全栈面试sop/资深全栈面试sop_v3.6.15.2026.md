@@ -373,7 +373,7 @@ app/
       page.tsx          // /products/123
     [...slug]/
       page.tsx          // /products/a/b/c
-    [[...slug]]/
+    [...slug](./...slug.md)/
       page.tsx          // /products 或 /products/a/b/c
 
 // 动态路由组件
