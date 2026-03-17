@@ -1,12 +1,15 @@
-// 考点：cache: 'no-store' — 跳过所有缓存，每次请求最新数据
-// 购物车数据实时变化，不能用缓存
+import { getCart } from '@/lib/mock';
 
-async function getCart() {
-  const res = await fetch('http://localhost:3002/api/cart', {
-    cache: 'no-store', // 关键：跳过 Data Cache
-  });
-  return res.json();
-}
+/**
+ * 🎯 面试考点：cache: 'no-store' — 跳过所有缓存
+ * 
+ * 购物车数据实时变化，不能用缓存。
+ * 实际项目中用 fetch(url, { cache: 'no-store' })，
+ * 本 demo 直接调用 mock 函数模拟数据源。
+ * 
+ * export const dynamic = 'force-dynamic' 确保每次请求都重新渲染
+ */
+export const dynamic = 'force-dynamic';
 
 export default async function CartPage() {
   const cart = await getCart();
@@ -39,6 +42,10 @@ export default async function CartPage() {
         <div style={{ textAlign: 'right', marginTop: 16, fontSize: 18, fontWeight: 700 }}>
           合计：<span style={{ color: '#e53e3e' }}>¥{total}</span>
         </div>
+      </div>
+
+      <div style={{ marginTop: 16, padding: 12, background: '#f0f9ff', borderRadius: 8, fontSize: 13 }}>
+        💡 实际项目中用 <code>fetch(url, {'{'} cache: &apos;no-store&apos; {'}'})</code> + <code>export const dynamic = &apos;force-dynamic&apos;</code>
       </div>
 
       <div className="cache-diagram" style={{ marginTop: 24 }}>

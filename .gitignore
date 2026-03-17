@@ -34,3 +34,10 @@ yarn-error.log*
 *.tmp
 *.temp
 .temp/
+
+# Next.js build output
+applet/**/.*next/
+applet/**/.next/
+
+# Local test files
+applet/**/.mybase/
