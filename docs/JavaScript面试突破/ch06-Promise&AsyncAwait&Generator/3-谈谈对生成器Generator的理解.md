@@ -3,69 +3,57 @@ tags:
   - 生成器函数
   - Generator
 ---
-# generator函数
-常规函数只会返回一个单一值 （或者不返回），而ES6的 generator可以按需一个接一个的返回
-（yield）多个值
 
-JavaScript中的函数是不可暂停的，generator函数则可以暂停
+# Generator 函数
 
-## 案例1：for...of
-for...of方式获取
+常规函数只会返回一个单一值（或者不返回），而 ES6 的 generator 可以按需一个接一个的返回（yield）多个值。
+
+JavaScript 中的函数是不可暂停的，generator 函数则可以暂停。
+
+## 基本语法
 
 ```js
-// 生成器函数可以暂停 正常js中的函数是不可暂停的
-
-  
-
 function* generator() {
-
-console.log("invoked 1st time"); // 调用第一次执行
-
-yield 1; // 输出1暂停
-
-console.log("invoked 2nd time"); // 调用第二次执行
-
-yield 2; // 输出2暂停
-
+  console.log("invoked 1st time");
+  yield 1;
+  console.log("invoked 2nd time");
+  yield 2;
 }
 
-let gen = generator(); // 调用Generator返回一个迭代器对象
+let gen = generator(); // 调用 Generator 返回一个迭代器对象
+console.log(gen);  // Object [Generator] {}
+```
 
-console.log(gen);  // Object [Generator] {}迭代器对象
+## 使用方式
 
-  
+### 1. for...of 方式
 
-// for...of 获取具体值 只有gen.next()获取{value, done}对象
+```js
+function* generator() {
+  console.log("invoked 1st time");
+  yield 1;
+  console.log("invoked 2nd time");
+  yield 2;
+}
+
+let gen = generator();
 
 for (const g of gen) {
-
-console.log("for...of g", g)
-
+  console.log("for...of g", g)
 }
-
 ```
-输出结果
 
-
+输出结果：
 ```
 Object [Generator] {}
-
 invoked 1st time
-
 for...of g 1
-
 invoked 2nd time
-
 for...of g 2
-
-  
-
-[Done] exited with code=0 in 0.373 seconds
-
 ```
 
-## 案例2：next()
-next()方式获取
+### 2. next() 方式
+
 ```js
 function* generator() {
     console.log("invoked 1st time");
@@ -75,318 +63,109 @@ function* generator() {
 }
 
 let gen = generator();
-console.log(gen);
 
-// next()方式获取
 let result1 = gen.next();
-console.log("第1次:", result1);  // {value: 1, done: false}
+console.log("第1次:", result1);
 
 let result2 = gen.next();
-console.log("第2次:", result2);  // {value: 2, done: false}
+console.log("第2次:", result2);
 
 let result3 = gen.next();
-console.log("第3次:", result3);  // {value: undefined, done: true}
-
-```
-输出结果:
-```
-Object [Generator] {}
-
-invoked 1st time
-
-第1次: { value: 1, done: false }
-
-invoked 2nd time
-
-第2次: { value: 2, done: false }
-
-第3次: { value: undefined, done: true }
-
-  
-
-[Done] exited with code=0 in 0.247 seconds
-
-```
-
-
-## 案例3：while+next()循环实现
-
-循环next() 可以拿到具体值也可以{value,done}对象
-```js
-  
-
-function* generator() {
-
-console.log("invoked 1st time");
-
-yield 1;
-
-console.log("invoked 2nd time");
-
-yield 2;
-
-}
-
-  
-
-let gen = generator();
-
-console.log(gen);
-
-  
-
-// 用 while 循环调用 next()
-
-let result = gen.next();
-
-while (!result.done) {
-
-console.log("value:", result.value);
-
-result = gen.next();
-
-}
-
-console.log("最后:", result);
-
+console.log("第3次:", result3);
 ```
 
 输出结果：
-
 ```
 Object [Generator] {}
-
 invoked 1st time
-
-value: { value: 1, done: false }
-
+第1次: { value: 1, done: false }
 invoked 2nd time
-
-value: { value: 2, done: false }
-
-最后: { value: undefined, done: true }
-
-  
-
-[Done] exited with code=0 in 0.224 seconds
-
+第2次: { value: 2, done: false }
+第3次: { value: undefined, done: true }
 ```
 
+## 核心特性
 
+### 返回值结构
 
+- `gen()` 返回生成器对象
+- `gen.next()` 返回迭代结果对象，包含 value 和 done 属性
+- `yield` 暂停执行并输出值
+- `return` 结束执行并输出最终值
 
+### 状态保持
 
-# 对比普通函数与生成器函数
-
-| 对比维度              | 普通函数               | 生成器函数                       | 示例代码                                            |
-| ----------------- | ------------------ | --------------------------- | ----------------------------------------------- |
-| **定义语法**          | `function fn() {}` | `function* fn() {}`         | `function* gen() { yield 1; }`                  |
-| **调用后返回**         | 执行结果（具体值）          | 生成器对象（迭代器）                  | `fn()` → `42` vs `gen()` → `Object [Generator]` |
-| **执行时机**          | 调用时立即执行            | 调用时不执行，`.next()` 时才执行       | `fn()` 立即输出 vs `gen()` 无输出                      |
-| **执行方式**          | 一次性执行完毕            | 分段执行，遇到 `yield` 暂停          | 步骤1→2→3 vs 步骤1→暂停→步骤2→暂停                        |
-| **暂停能力**          | ❌ 不能暂停             | ✅ `yield` 暂停，`.next()` 恢复   | 无 vs `yield 1; yield 2;`                        |
-| **返回关键字**         | `return`（只能一次）     | `yield`（多次）+ `return`（最后）   | `return 1;` vs `yield 1; yield 2; return 3;`    |
-| **返回值结构**         | 直接返回数据             | `{value: 值, done: 布尔}`      | `42` vs `{value: 1, done: false}`               |
-| **多次返回**          | ❌ 只能返回一次           | ✅ 可以 `yield` 多次             | `return 1;` vs `yield 1; yield 2; yield 3;`     |
-| **状态保持**          | ❌ 无状态，每次调用重新开始     | ✅ 有状态，记住上次执行位置和变量           | `count=0` 每次重置 vs `count++` 累加                  |
-| **局部变量**          | 每次调用重新初始化          | 保持在暂停点                      | `let x=0; x++;` 永远是1 vs 累加                      |
-| **获取所有结果**        | 直接使用返回值            | `for...of` 或 `[...gen()]`   | `const r = fn();` vs `for(const v of gen()){}`  |
-| **是否包含 return 值** | -                  | `for...of` 不包含，`.next()` 包含 | `[...gen()]` → `[1,2,3]` 无4                     |
-| **内存占用**          | 一次性生成所有数据          | 按需生成，节省内存                   | `[1...1000000]` vs 只生成需要的                       |
-| **无限序列**          | ❌ 不支持（内存溢出）        | ✅ 支持                        | 无 vs `while(true) yield i++;`                   |
-| **惰性求值**          | ❌ 立即计算所有           | ✅ 按需计算                      | 生成100万个数 vs 用多少生成多少                             |
-| **适用场景**          | 同步计算、一次性结果         | 大数据、无限序列、状态机、迭代器            | 加法计算 vs 斐波那契数列                                  |
-| **性能（大数据）**       | 慢（一次性生成）           | 快（按需生成）                     | 生成100万个数：50ms vs 0.1ms                          |
-| **代码复杂度**         | 简单直接               | 稍复杂（需理解暂停机制）                | `return a+b;` vs `yield a; yield b;`            |
-
-
-
-
-# gen函数返回值
-
-调用gen函数 返回的是一个 生成器对象（迭代器），不是像普通函数那样的具体值
-```js
-function* gen() {
-  console.log("开始");
-  yield 1;  // ← 这不是返回值，只是"输出1"
-  console.log("中间");
-  yield 2;  // ← 这也不是返回值，只是"输出2"
-  console.log("结束");
-  return 3; // ← 这也不是返回值，只是"输出3"
-}
-
-// 调用生成器函数
-const g = gen();
-// 此时没有任何输出
-// g 是一个生成器对象
-
-// 调用 .next() 方法
-const result1 = g.next();
-// 输出：开始
-// result1 = {value: 1, done: false}
-// ↑ 这个对象是 .next() 方法的返回值
-
-const result2 = g.next();
-// 输出：中间
-// result2 = {value: 2, done: false}
-
-const result3 = g.next();
-// 输出：结束
-// result3 = {value: 3, done: true}
-```
-
-
-| 操作         | 返回什么        | 格式                      |
-| ---------- | ----------- | ----------------------- |
-| `gen()`    | 生成器对象       | `Object [Generator] {}` |
-| `g.next()` | 迭代结果        | `{value: 值, done: 布尔}`  |
-| `yield 1`  | 不返回，只是暂停并输出 | -                       |
-| `return 3` | 不返回，只是结束并输出 | -                       |
-
-
-# for... of对比.next()
-
-
-## for...of 直接得到具体值
-```
-function* gen() {
-  yield 1;
-  yield 2;
-  yield 3;
-  return 4;
-}
-
-// for...of 得到的是具体值
-for (const value of gen()) {
-  console.log(value);
-}
-// 输出：
-// 1
-// 2
-// 3
-// ← 注意：没有 4（return 的值不包含）
-```
-
-
-
-
-## next()得到的是{value, done}对象
-```
-function* gen() {
-  yield 1;
-  yield 2;
-  return 3;
-}
-
-// 方式1：使用 .next()
-const g1 = gen();
-console.log(g1.next());  // {value: 1, done: false}
-console.log(g1.next());  // {value: 2, done: false}
-console.log(g1.next());  // {value: 3, done: true}
-
-// 方式2：使用 for...of
-for (const value of gen()) {
-  console.log(value);
-}
-// 输出：
-// 1
-// 2
-// ← 只有具体值，没有 {value, done}
-// ← 没有 return 的 3
-```
-
-
-## 对比表格
-| 特性        | .next()         | for...of |
-| --------- | --------------- | -------- |
-| 返回格式      | `{value, done}` | 具体值      |
-| 类型        | 对象              | 原始值/对象   |
-| 包含 return | ✅               | ❌        |
-| 使用场景      | 需要控制迭代          | 简单遍历     |
-| 代码复杂度     | 较复杂             | 简单       |
-.next()   → 包装盒（{value, done}）
-for...of  → 拆开的礼物（具体值）
-
-.next()   → 完整信息
-for...of  → 只要值
-
-
-
-
-## next()可以拿到return
-
-
-生成器函数本来就可以retrun
-return返回的是最终值
-```
-// 如果想让 for...of 拿到所有值
-function* gen() {
-  yield 1;
-  yield 2;
-  yield 3;  // ← 全用 yield
-}
-
-// 如果想返回元数据/最终状态
-function* gen() {
-  yield 1;
-  yield 2;
-  return { count: 2 };  // ← 用 return 返回元数据
-}
-```
-
-
-|方法|能否拿到 return 的值|原因|
-|---|---|---|
-|`.next()`|✅ 能|返回完整的 `{value, done}`|
-|`for...of`|❌ 不能|遇到 `done: true` 就停止|
-|`[...gen()]`|❌ 不能|内部用 for...of|
-|解构|❌ 不能|内部用 for...of|
-
-
-
-# yield* arr
+Generator 函数可以保持状态，每次调用 next() 时从上次暂停的位置继续执行。
 
 ```js
-// yield*
+function* counter() {
+  let count = 0;
+  while (true) {
+    yield count++;
+  }
+}
 
+const gen = counter();
+console.log(gen.next().value); // 0
+console.log(gen.next().value); // 1
+console.log(gen.next().value); // 2
+```
 
+## 对比普通函数
+
+| 特性 | 普通函数 | Generator 函数 |
+|------|---------|---------------|
+| 定义语法 | `function fn()` | `function* fn()` |
+| 调用后返回 | 执行结果 | 生成器对象 |
+| 执行时机 | 调用时立即执行 | 调用 next() 时才执行 |
+| 暂停能力 | 不能暂停 | 可以用 yield 暂停 |
+| 返回关键字 | return（一次） | yield（多次）+ return |
+| 状态保持 | 无状态 | 有状态，记住执行位置 |
+
+## for...of vs next()
+
+### for...of 特点
+- 直接得到具体值
+- 不包含 return 的值
+- 适合简单遍历
+
+### next() 特点
+- 返回包含 value 和 done 的对象
+- 包含 return 的值
+- 适合需要控制迭代的场景
+
+## yield* 语法
+
+```js
 const arr = ['a', 'b', 'c']
 
-  
-
 function* generator() {
-
-yield 1;
-
-yield* arr;
-
-yield 2;
-
+  yield 1;
+  yield* arr;  // 委托给另一个可迭代对象
+  yield 2;
 }
 
-  
-
-for (const value of generator()) {
-
-console.log(value)
-
+for (const item of generator()) {
+  console.log(item)
 }
 ```
 
-输出结果
-
+输出结果：
 ```
 1
-
 a
-
 b
-
 c
-
 2
-
-  
-
-[Done] exited with code=0 in 0.237 seconds
 ```
+
+## 应用场景
+
+1. **惰性求值** - 按需生成数据，节省内存
+2. **无限序列** - 可以生成无限序列而不会内存溢出
+3. **状态机** - 利用暂停/恢复特性实现状态机
+4. **异步流程控制** - 配合 Promise 实现 async/await 的底层机制
+
+## 总结
+
+Generator 函数是 ES6 引入的强大特性，通过 yield 关键字实现函数的暂停和恢复，为 JavaScript 提供了更灵活的流程控制能力。

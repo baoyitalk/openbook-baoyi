@@ -41,7 +41,7 @@ await
 Promise.resolve 三种方法
 
 
-![Promise解包拿到普通数据](JavaScript面试突破/ch06-Promise&AsyncAwait&Generator/x1014-async修饰函数拿到Promise数据解包.md#^p5csh4)
+[Promise解包拿到普通数据](./x1014-async修饰函数拿到Promise数据解包.md)
 
 
 
@@ -291,7 +291,7 @@ async function getData() {
 **核心结论：`await` 是 `.then()` 的语法糖，提供了更好的可读性和控制流，但本质上都是处理 Promise。现代开发优先用 `await`，除非有特殊需求。**
 
 
-[x1010-async await底层是Promise吗.md^6.](../../x1010-async%20await底层是Promise吗.md^6..md)
+[x1010-async await底层是Promise吗](./x1010-async%20await底层是Promise吗.md)
 
 ```
 // Promise 的本质：一个状态机
@@ -370,7 +370,7 @@ async function test() {
 2. **执行层面**：Generator 提供暂停/恢复，Promise 管理异步
 3. **本质**：自动执行的 Generator + Promise 包装器
 
-![底层关系图](JavaScript面试突破/ch06-Promise&AsyncAwait&Generator/x1010-async%20await底层是Promise吗.md#^clyoeh)
+[底层关系图](./x1010-async%20await底层是Promise吗.md)
 
 
 
