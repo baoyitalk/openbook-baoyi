@@ -264,6 +264,12 @@
   background: #fdfdfd;
 }
 
+.feynmanBlock {
+  display: grid;
+  gap: 0.35rem;
+  line-height: 1.5;
+}
+
 .a0Deep {
   margin-top: 0.45rem;
 }

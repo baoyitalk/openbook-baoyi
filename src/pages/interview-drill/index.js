@@ -41,24 +41,44 @@ function collectAnswerRefUsage(categories) {
 }
 
 function resolveAnswerPayload(question, node) {
+  const defaultPitfall = '常见漏洞：只背结论，不讲适用场景、边界和取舍。';
+  const toFeynman = (oral, deep, source = {}) => ({
+    learning:
+      source.learning ||
+      `是什么：${oral || deep}\n作用：用于快速回答“这个点是干嘛的、解决什么问题”。`,
+    plain: source.plain || deep || oral || '',
+    pitfall: source.pitfall || defaultPitfall,
+    summary: source.summary || oral || deep || '',
+  });
+
   if (node.answerRef) {
     const local = question.answerLibrary?.[node.answerRef];
     const shared = sharedAnswerLibrary?.[node.answerRef];
     const fromRef = local || shared;
     if (fromRef) {
       if (typeof fromRef === 'string') {
-        return {oral: fromRef, deep: fromRef};
+        return {
+          oral: fromRef,
+          deep: fromRef,
+          feynman: toFeynman(fromRef, fromRef),
+        };
       }
+      const oral = fromRef.oral || node.a || '';
+      const deep = fromRef.deep || fromRef.oral || node.a || '';
       return {
-        oral: fromRef.oral || node.a || '',
-        deep: fromRef.deep || fromRef.oral || node.a || '',
+        oral,
+        deep,
+        feynman: toFeynman(oral, deep, fromRef.feynman || {}),
       };
     }
   }
 
+  const oral = node.a || '';
+  const deep = node.deepAnswer || node.a || '';
   return {
-    oral: node.a || '',
-    deep: node.deepAnswer || node.a || '',
+    oral,
+    deep,
+    feynman: toFeynman(oral, deep, node.feynman || {}),
   };
 }
 
@@ -141,7 +161,12 @@ function ChainNode({
           </button>
           {deepOpen && (
             <div className={styles.deepAnswerBox}>
-              <strong>深层版：</strong>{answer.deep}
+              <div className={styles.feynmanBlock}>
+                <div><strong>1. 学习理解：</strong>{answer.feynman.learning}</div>
+                <div><strong>2. 大白讲解：</strong>{answer.feynman.plain}</div>
+                <div><strong>3. 漏洞点：</strong>{answer.feynman.pitfall}</div>
+                <div><strong>4. 简短总结：</strong>{answer.feynman.summary}</div>
+              </div>
             </div>
           )}
         </div>
@@ -255,6 +280,12 @@ export default function InterviewDrillPage() {
     () => collectAnswerRefUsage(interviewCategories),
     [interviewCategories]
   );
+  const toA0Feynman = (q) => ({
+    learning: `是什么：${q.a0 || q.a0Deep || ''}\n作用：先把主问题讲清楚，再接追问。`,
+    plain: q.a0Deep || q.a0 || '',
+    pitfall: '常见漏洞：只说结论，不说依据、场景和边界。',
+    summary: q.a0 || q.a0Deep || '',
+  });
 
   return (
     <Layout title="面试速刷" description="可搜索、可切链路、可折叠答案的面试速刷页">
@@ -341,8 +372,13 @@ export default function InterviewDrillPage() {
                       <p><strong>Q1：</strong>{q.q1}</p>
                       <p><strong>A0 口语版：</strong>{q.a0}</p>
                       <details className={styles.a0Deep}>
-                        <summary>A0 深层版（默认折叠）</summary>
-                        <div>{q.a0Deep || q.a0}</div>
+                        <summary>A0 深层版（费曼4段，默认折叠）</summary>
+                        <div className={styles.feynmanBlock}>
+                          <div><strong>1. 学习理解：</strong>{toA0Feynman(q).learning}</div>
+                          <div><strong>2. 大白讲解：</strong>{toA0Feynman(q).plain}</div>
+                          <div><strong>3. 漏洞点：</strong>{toA0Feynman(q).pitfall}</div>
+                          <div><strong>4. 简短总结：</strong>{toA0Feynman(q).summary}</div>
+                        </div>
                       </details>
                     </div>
 
