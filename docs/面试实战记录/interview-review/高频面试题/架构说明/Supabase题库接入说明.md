@@ -13,6 +13,7 @@
 ## 3. 建表 + 种子 SQL
 - 文件：`supabase/migrations/20260408141000_interview_drill_v2.sql`
 - 文件：`supabase/migrations/20260408142000_interview_drill_v2_seed.sql`
+- 文件：`supabase/migrations/20260408193000_interview_drill_v2_seed_refresh.sql`（题库扩容刷新）
 - 两个 SQL 都要执行：先建表，再导入种子数据。
 
 ## 4. 环境变量
@@ -43,3 +44,10 @@ SUPABASE_ANON_KEY=你的anon key
 3. 节点用 `answer_id` 关联答案库。
 4. 按 `sort_order` 排序并组装递归树。
 5. 页面展示“口语版 + 深层版（默认折叠）”。
+
+## 8. 当前线上数据规模（2026-04-08）
+- categories=6
+- answers=868
+- questions=79
+- nodes=793
+- checkedChains=158

@@ -19,8 +19,9 @@
 ## Validation
 - `npm run test:interview-drill` PASS
   - categories=6, questions=79, nodes=793
-- `npm run test:interview-drill:supabase` PASS（远端当前仍是旧数据集）
+- `npm run test:interview-drill:supabase` PASS
+  - categories=6, answers=868, questions=79, nodes=793
+  - checkedChains=158, rule violations=0
 
 ## Note
-- 远端 Supabase 当前仍显示旧种子（5分类/29题）。
-- 执行 `20260408193000_interview_drill_v2_seed_refresh.sql` 后可升级到新数据集。
+- 远端 Supabase 已执行 `20260408193000_interview_drill_v2_seed_refresh.sql`，数据已对齐。

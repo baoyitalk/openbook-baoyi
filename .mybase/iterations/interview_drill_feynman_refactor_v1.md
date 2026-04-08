@@ -20,7 +20,7 @@
   - 文件：`src/lib/interviewDrillRepository.js`
 - 费曼块样式增强：支持换行展示
   - 文件：`src/pages/interview-drill/index.module.css`
-- 新增 Python 爬虫 20 题费曼版文档并加入分类总索引
+- 新增 Python 爬虫费曼版文档并加入分类总索引（后续已扩展至 50 题）
   - 文件：`docs/面试实战记录/interview-review/高频面试题/分类版/06-Python爬虫费曼4段.md`
 
 ## 3. Validation

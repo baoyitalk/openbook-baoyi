@@ -9,6 +9,7 @@
 ```bash
 npm run test:interview-drill
 npm run test:interview-drill:supabase
+npm run build
 node --check src/pages/interview-drill/index.js
 node --check src/lib/interviewDrillRepository.js
 node --check src/data/interviewDrillData.js
@@ -43,11 +44,17 @@ node --check scripts/test_interview_drill_supabase.cjs
 - Output summary: `pass=5, fail=0`
 - Additional syntax checks: all passed
 - Command: `npm run test:interview-drill:supabase`
-- Output: `categories=5, answers=318, questions=29, nodes=293, rule violations=0`
+- Output: `categories=6, answers=868, questions=79, nodes=793, rule violations=0`
 - Conclusion: 在线联调通过，远端题库数据与链路规则校验通过
+- Command: `npm run build`
+- Output: FAIL（历史文档 MDX/图片问题，不是 interview-drill 本次改动导致）
+- Build blockers:
+  - `docs/attchements/zs1016-React组件按职责与规范.md`（MDX expression parse error）
+  - `docs/面试实战记录/timeline/20260323/字节.md`（broken markdown image path）
+  - 若干历史文档图片类型/路径告警
 
 ## 5. Risks / Pending
-- Full site build currently受历史 docs/MDX 问题影响，不属于 interview drill 本次改动范围。
+- Full site build 仍受历史 docs/MDX 问题影响，不属于 interview drill 本次改动范围。
 - Browser-level interaction E2E（真实点击/折叠/切链）建议后续加 Playwright 用例。
 - Supabase 在线验证：已通过（2026-04-08）
 - 新增语义规则尚未编码落地：

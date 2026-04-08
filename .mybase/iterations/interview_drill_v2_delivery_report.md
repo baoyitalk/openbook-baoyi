@@ -30,6 +30,8 @@ Upgrade interview drill from v1 schema to v2 schema with:
 - Node-level unique id display
 - oral/deep answer split (deep collapsed by default)
 - answer ref display and usage count high-frequency tag
+- Feynman 4-step rendering for A0 and chain answers
+- Python crawler category expanded to 50 questions
 
 ### 2.4 Testing Tooling
 - local rule validation script: `scripts/test_interview_drill.cjs`
@@ -47,6 +49,7 @@ npm run test:interview-drill
 ```
 Result:
 - PASS, summary `pass=5, fail=0`
+- Data size: `categories=6, questions=79, nodes=793`
 
 ### 3.2 Syntax Checks
 Commands:
@@ -67,11 +70,23 @@ npm run test:interview-drill:supabase
 ```
 Result:
 - PASS: `Supabase schema reachable`
-- PASS: `categories=5, answers=318, questions=29, nodes=293`
-- PASS: `checkedChains=58, rule violations=0`
+- PASS: `categories=6, answers=868, questions=79, nodes=793`
+- PASS: `checkedChains=158, rule violations=0`
+
+### 3.4 Full Build
+Command:
+```bash
+npm run build
+```
+Result:
+- FAIL（历史文档问题）
+- Key blockers:
+  - `docs/attchements/zs1016-React组件按职责与规范.md`（MDX expression parse error）
+  - `docs/面试实战记录/timeline/20260323/字节.md`（broken markdown image path）
 
 ## 4. Blocking Item
-- None.
+- Interview drill domain: None.
+- Repository-wide docs build: blocked by historical MDX/image issues above.
 
 ## 5. Final Status
 - Development: Completed (v2 architecture + code + tests)
