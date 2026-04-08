@@ -13,6 +13,40 @@ function normalizeText(text) {
   return (text || '').toLowerCase();
 }
 
+function inferContrastHint(questionText = '') {
+  const q = questionText || '';
+  if (q.includes('区别') || q.includes('对比') || q.includes('vs')) {
+    return '重点补一句区别：分别适用什么场景、各自代价是什么。';
+  }
+  if (q.includes('为什么')) {
+    return '重点补一句为什么：问题背景、方案取舍和最终收益。';
+  }
+  if (q.includes('怎么') || q.includes('如何')) {
+    return '重点补一句怎么做：步骤顺序、落地动作和验收指标。';
+  }
+  return '重点补一句边界：什么时候用、什么时候不用。';
+}
+
+function buildFeynmanAnswer({questionText = '', oral = '', deep = '', source = {}}) {
+  const finalOral = oral || deep || '';
+  const finalDeep = deep || oral || '';
+  const learning =
+    source.learning ||
+    `是什么：${finalOral}\n作用：解决当前问题里的核心矛盾，保证回答可落地。\n${inferContrastHint(questionText)}`;
+  const plain =
+    source.plain ||
+    finalDeep ||
+    finalOral;
+  const pitfall =
+    source.pitfall ||
+    '常见漏洞：只报结论，不讲场景、边界、代价，容易被继续追问卡住。';
+  const summary =
+    source.summary ||
+    finalOral;
+
+  return {learning, plain, pitfall, summary};
+}
+
 function getNodeId(questionId, chainType, path) {
   return `${questionId}.${chainType}.${path.join('.')}`;
 }
@@ -41,16 +75,6 @@ function collectAnswerRefUsage(categories) {
 }
 
 function resolveAnswerPayload(question, node) {
-  const defaultPitfall = '常见漏洞：只背结论，不讲适用场景、边界和取舍。';
-  const toFeynman = (oral, deep, source = {}) => ({
-    learning:
-      source.learning ||
-      `是什么：${oral || deep}\n作用：用于快速回答“这个点是干嘛的、解决什么问题”。`,
-    plain: source.plain || deep || oral || '',
-    pitfall: source.pitfall || defaultPitfall,
-    summary: source.summary || oral || deep || '',
-  });
-
   if (node.answerRef) {
     const local = question.answerLibrary?.[node.answerRef];
     const shared = sharedAnswerLibrary?.[node.answerRef];
@@ -60,7 +84,11 @@ function resolveAnswerPayload(question, node) {
         return {
           oral: fromRef,
           deep: fromRef,
-          feynman: toFeynman(fromRef, fromRef),
+          feynman: buildFeynmanAnswer({
+            questionText: node.q,
+            oral: fromRef,
+            deep: fromRef,
+          }),
         };
       }
       const oral = fromRef.oral || node.a || '';
@@ -68,7 +96,12 @@ function resolveAnswerPayload(question, node) {
       return {
         oral,
         deep,
-        feynman: toFeynman(oral, deep, fromRef.feynman || {}),
+        feynman: buildFeynmanAnswer({
+          questionText: node.q,
+          oral,
+          deep,
+          source: fromRef.feynman || {},
+        }),
       };
     }
   }
@@ -78,7 +111,12 @@ function resolveAnswerPayload(question, node) {
   return {
     oral,
     deep,
-    feynman: toFeynman(oral, deep, node.feynman || {}),
+    feynman: buildFeynmanAnswer({
+      questionText: node.q,
+      oral,
+      deep,
+      source: node.feynman || {},
+    }),
   };
 }
 
@@ -280,12 +318,6 @@ export default function InterviewDrillPage() {
     () => collectAnswerRefUsage(interviewCategories),
     [interviewCategories]
   );
-  const toA0Feynman = (q) => ({
-    learning: `是什么：${q.a0 || q.a0Deep || ''}\n作用：先把主问题讲清楚，再接追问。`,
-    plain: q.a0Deep || q.a0 || '',
-    pitfall: '常见漏洞：只说结论，不说依据、场景和边界。',
-    summary: q.a0 || q.a0Deep || '',
-  });
 
   return (
     <Layout title="面试速刷" description="可搜索、可切链路、可折叠答案的面试速刷页">
@@ -373,12 +405,22 @@ export default function InterviewDrillPage() {
                       <p><strong>A0 口语版：</strong>{q.a0}</p>
                       <details className={styles.a0Deep}>
                         <summary>A0 深层版（费曼4段，默认折叠）</summary>
-                        <div className={styles.feynmanBlock}>
-                          <div><strong>1. 学习理解：</strong>{toA0Feynman(q).learning}</div>
-                          <div><strong>2. 大白讲解：</strong>{toA0Feynman(q).plain}</div>
-                          <div><strong>3. 漏洞点：</strong>{toA0Feynman(q).pitfall}</div>
-                          <div><strong>4. 简短总结：</strong>{toA0Feynman(q).summary}</div>
-                        </div>
+                        {(() => {
+                          const a0Feynman = buildFeynmanAnswer({
+                            questionText: q.q1,
+                            oral: q.a0 || q.a0Deep || '',
+                            deep: q.a0Deep || q.a0 || '',
+                            source: q.a0Feynman || {},
+                          });
+                          return (
+                            <div className={styles.feynmanBlock}>
+                              <div><strong>1. 学习理解：</strong>{a0Feynman.learning}</div>
+                              <div><strong>2. 大白讲解：</strong>{a0Feynman.plain}</div>
+                              <div><strong>3. 漏洞点：</strong>{a0Feynman.pitfall}</div>
+                              <div><strong>4. 简短总结：</strong>{a0Feynman.summary}</div>
+                            </div>
+                          );
+                        })()}
                       </details>
                     </div>
 

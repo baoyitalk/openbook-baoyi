@@ -3,6 +3,31 @@ import {createClient} from '@supabase/supabase-js';
 const CHAIN_A = 'A';
 const CHAIN_B = 'B';
 
+function inferContrastHint(questionText = '') {
+  const q = questionText || '';
+  if (q.includes('区别') || q.includes('对比') || q.includes('vs')) {
+    return '补充区别：适用场景和代价。';
+  }
+  if (q.includes('为什么')) {
+    return '补充原因：背景、取舍、收益。';
+  }
+  if (q.includes('怎么') || q.includes('如何')) {
+    return '补充方法：步骤、动作、验收。';
+  }
+  return '补充边界：何时适用、何时不适用。';
+}
+
+function buildFeynmanAnswer({questionText = '', oral = '', deep = ''}) {
+  const finalOral = oral || deep || '';
+  const finalDeep = deep || oral || '';
+  return {
+    learning: `是什么：${finalOral}\n作用：用于解决当前问题并支撑后续追问。\n${inferContrastHint(questionText)}`,
+    plain: finalDeep || finalOral,
+    pitfall: '常见漏洞：只给结论，不讲场景、边界和取舍。',
+    summary: finalOral,
+  };
+}
+
 function mapCategory(raw) {
   return {
     id: raw.slug,
@@ -20,6 +45,11 @@ function mapQuestion(raw) {
     q1: raw.q1,
     a0: raw.a0,
     a0Deep: raw.a0Deep || raw.a0,
+    a0Feynman: buildFeynmanAnswer({
+      questionText: raw.q1,
+      oral: raw.a0,
+      deep: raw.a0Deep || raw.a0,
+    }),
     chainA: [],
     chainB: [],
   };
@@ -51,6 +81,11 @@ function buildChainTree(nodes, questionId, chainType, answerMap) {
         q: child.prompt,
         a: answer?.oral_text || '',
         deepAnswer: answer?.deep_text || answer?.oral_text || '',
+        feynman: buildFeynmanAnswer({
+          questionText: child.prompt,
+          oral: answer?.oral_text || '',
+          deep: answer?.deep_text || answer?.oral_text || '',
+        }),
         answerRef: child.answer_id,
         closeReason: child.close_reason || 'NONE',
         depth: child.depth,
