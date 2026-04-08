@@ -34,6 +34,13 @@ const config = {
     locales: ['zh-Hans'],
   },
 
+  customFields: {
+    supabaseUrl:
+      process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+    supabaseAnonKey:
+      process.env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+  },
+
   presets: [
     [
       'classic',
@@ -80,6 +87,7 @@ const config = {
             label: '文档',
           },
           {to: '/blog', label: '博客', position: 'left'},
+          {to: '/interview-drill', label: '面试速刷', position: 'left'},
           {
             href: 'https://github.com/baoyitalk/openbook-baoyi',
             label: 'GitHub',

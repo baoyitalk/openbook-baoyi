@@ -7,6 +7,8 @@
     "docusaurus": "docusaurus",
     "start": "docusaurus start --port 3005",
     "build": "docusaurus build",
+    "test:interview-drill": "node scripts/test_interview_drill.cjs",
+    "test:interview-drill:supabase": "node scripts/test_interview_drill_supabase.cjs",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -20,6 +22,7 @@
   "dependencies": {
     "@docusaurus/core": "^3.9.2",
     "@docusaurus/preset-classic": "^3.9.2",
+    "@supabase/supabase-js": "^2.102.1",
     "clsx": "^2.1.1",
     "docusaurus-plugin-obsidian-vault": "^1.0.0",
     "prism-react-renderer": "^2.4.1",
