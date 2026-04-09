@@ -3,6 +3,15 @@ import {createClient} from '@supabase/supabase-js';
 const CHAIN_A = 'A';
 const CHAIN_B = 'B';
 
+function genUuid() {
+  if (typeof globalThis !== 'undefined' && globalThis.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID();
+  }
+  return `${Date.now().toString(16)}-${Math.random().toString(16).slice(2, 10)}-${Math.random()
+    .toString(16)
+    .slice(2, 10)}`;
+}
+
 function inferContrastHint(questionText = '') {
   const q = questionText || '';
   if (q.includes('区别') || q.includes('对比') || q.includes('vs')) {
@@ -101,6 +110,14 @@ function assertSupabaseConfig(url, anonKey) {
   return Boolean(url && anonKey);
 }
 
+async function insertInBatches(client, table, rows, batchSize = 200) {
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const chunk = rows.slice(i, i + batchSize);
+    const {error} = await client.from(table).insert(chunk);
+    if (error) throw error;
+  }
+}
+
 export async function loadInterviewDrillFromSupabase({url, anonKey}) {
   if (!assertSupabaseConfig(url, anonKey)) {
     throw new Error('Supabase 未配置');
@@ -162,4 +179,174 @@ export async function loadInterviewDrillFromSupabase({url, anonKey}) {
   });
 
   return Array.from(categoryMap.values()).filter((c) => c.questions.length > 0);
+}
+
+export async function saveInterviewDrillToSupabase({url, anonKey, categories}) {
+  if (!assertSupabaseConfig(url, anonKey)) {
+    throw new Error('Supabase 未配置');
+  }
+  if (!Array.isArray(categories) || categories.length === 0) {
+    throw new Error('没有可保存的题库数据');
+  }
+
+  const client = createClient(url, anonKey);
+
+  const [existingCategoriesRes, existingQuestionsRes] = await Promise.all([
+    client.from('interview_categories').select('id, slug'),
+    client.from('interview_questions').select('id, slug'),
+  ]);
+  if (existingCategoriesRes.error) throw existingCategoriesRes.error;
+  if (existingQuestionsRes.error) throw existingQuestionsRes.error;
+
+  const existingCategoryMap = new Map(
+    (existingCategoriesRes.data || []).map((item) => [item.slug, item.id])
+  );
+  const existingQuestionMap = new Map(
+    (existingQuestionsRes.data || []).map((item) => [item.slug, item.id])
+  );
+
+  const categoryRows = categories.map((category, idx) => ({
+    id: existingCategoryMap.get(category.id) || genUuid(),
+    slug: category.id,
+    label: category.label || category.id,
+    heat: category.heat || 'A',
+    sort_order: idx + 1,
+  }));
+
+  const {error: upsertCategoryErr} = await client
+    .from('interview_categories')
+    .upsert(categoryRows, {onConflict: 'slug'});
+  if (upsertCategoryErr) throw upsertCategoryErr;
+
+  const categoryLookupRes = await client
+    .from('interview_categories')
+    .select('id, slug');
+  if (categoryLookupRes.error) throw categoryLookupRes.error;
+  const categoryIdBySlug = new Map(
+    (categoryLookupRes.data || []).map((item) => [item.slug, item.id])
+  );
+
+  const questionRows = [];
+  const answerRows = [];
+  const chainRows = [];
+  const activeQuestionIds = [];
+  const currentQuestionSlugs = new Set();
+
+  const buildChain = ({
+    nodes = [],
+    questionId,
+    chainType,
+    parentId = null,
+    depth = 1,
+  }) => {
+    nodes.forEach((node, idx) => {
+      const nodeId = genUuid();
+      const answerId = genUuid();
+      answerRows.push({
+        id: answerId,
+        oral_text: node.a || '',
+        deep_text: node.deepAnswer || node.a || '',
+        is_active: true,
+      });
+      chainRows.push({
+        id: nodeId,
+        question_id: questionId,
+        chain_type: chainType,
+        parent_id: parentId,
+        prompt: node.q || '',
+        answer_id: answerId,
+        depth,
+        close_reason:
+          node.closeReason ||
+          (depth >= 4 ? 'FORCED_CLOSE_AT_DEPTH_4' : 'NONE'),
+        sort_order: idx + 1,
+      });
+      if (Array.isArray(node.followUps) && node.followUps.length > 0) {
+        buildChain({
+          nodes: node.followUps,
+          questionId,
+          chainType,
+          parentId: nodeId,
+          depth: Math.min(depth + 1, 4),
+        });
+      }
+    });
+  };
+
+  categories.forEach((category, categoryIdx) => {
+    const categoryId = categoryIdBySlug.get(category.id);
+    if (!categoryId) return;
+    (category.questions || []).forEach((question, qIdx) => {
+      currentQuestionSlugs.add(question.id);
+      const questionId = existingQuestionMap.get(question.id) || genUuid();
+      activeQuestionIds.push(questionId);
+
+      const a0AnswerId = genUuid();
+      answerRows.push({
+        id: a0AnswerId,
+        oral_text: question.a0 || '',
+        deep_text: question.a0Deep || question.a0 || '',
+        is_active: true,
+      });
+
+      questionRows.push({
+        id: questionId,
+        category_id: categoryId,
+        slug: question.id,
+        title: question.title || question.id,
+        q1: question.q1 || question.title || '',
+        a0_answer_id: a0AnswerId,
+        aliases: question.aliases || [],
+        sort_order: categoryIdx * 1000 + qIdx + 1,
+        is_active: true,
+      });
+
+      buildChain({
+        nodes: question.chainA || [],
+        questionId,
+        chainType: CHAIN_A,
+      });
+      buildChain({
+        nodes: question.chainB || [],
+        questionId,
+        chainType: CHAIN_B,
+      });
+    });
+  });
+
+  if (questionRows.length === 0) {
+    throw new Error('没有可保存的问题数据');
+  }
+
+  // deactivate all existing questions first, then reactivate current set
+  const {error: deactivateErr} = await client
+    .from('interview_questions')
+    .update({is_active: false})
+    .eq('is_active', true);
+  if (deactivateErr) throw deactivateErr;
+
+  await insertInBatches(client, 'interview_answers', answerRows, 200);
+
+  const {error: upsertQuestionErr} = await client
+    .from('interview_questions')
+    .upsert(questionRows, {onConflict: 'slug'});
+  if (upsertQuestionErr) throw upsertQuestionErr;
+
+  if (activeQuestionIds.length > 0) {
+    const {error: deleteChainErr} = await client
+      .from('interview_chain_nodes')
+      .delete()
+      .in('question_id', activeQuestionIds);
+    if (deleteChainErr) throw deleteChainErr;
+  }
+
+  await insertInBatches(client, 'interview_chain_nodes', chainRows, 200);
+
+  return {
+    categories: categoryRows.length,
+    questions: questionRows.length,
+    answers: answerRows.length,
+    nodes: chainRows.length,
+    questionSlugs: Array.from(currentQuestionSlugs),
+  };
 }

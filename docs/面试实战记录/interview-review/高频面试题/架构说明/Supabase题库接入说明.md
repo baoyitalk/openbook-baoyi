@@ -14,6 +14,7 @@
 - 文件：`supabase/migrations/20260408141000_interview_drill_v2.sql`
 - 文件：`supabase/migrations/20260408142000_interview_drill_v2_seed.sql`
 - 文件：`supabase/migrations/20260408193000_interview_drill_v2_seed_refresh.sql`（题库扩容刷新）
+- 文件：`supabase/migrations/20260408194500_interview_drill_write_policies.sql`（编辑模式写库策略）
 - 两个 SQL 都要执行：先建表，再导入种子数据。
 
 ## 4. 环境变量
@@ -51,3 +52,8 @@ SUPABASE_ANON_KEY=你的anon key
 - questions=79
 - nodes=793
 - checkedChains=158
+
+## 9. 编辑模式落库说明
+- 页面支持 `阅览模式` 和 `编辑模式`。
+- 编辑模式可对问题与追问链做手动 CRUD，并写入讨论备注。
+- 点击“保存到数据库”会同步当前草稿到 Supabase（覆盖式重建当前题库链路）。

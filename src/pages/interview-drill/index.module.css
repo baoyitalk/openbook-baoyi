@@ -143,6 +143,13 @@
   margin-bottom: 0.7rem;
 }
 
+.categoryHeaderLine {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.8rem;
+}
+
 .questionCard {
   border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: 12px;
@@ -279,6 +286,100 @@
   margin-top: 0.55rem;
   font-size: 0.8rem;
   color: var(--ifm-color-emphasis-700);
+}
+
+.discussionBox {
+  margin-top: 0.45rem;
+  padding: 0.45rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: #fffef8;
+  font-size: 0.88rem;
+}
+
+.editPanel {
+  margin-top: 0.5rem;
+  padding: 0.65rem;
+  border: 1px dashed var(--ifm-color-emphasis-400);
+  border-radius: 10px;
+  background: #fcfcff;
+}
+
+.editorGrid {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.editorLabel {
+  display: grid;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.editorInput,
+.editorTextarea {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ifm-font-color-base);
+  padding: 0.45rem 0.55rem;
+}
+
+.editorTextarea {
+  min-height: 66px;
+  resize: vertical;
+}
+
+.editorActionsTop {
+  margin-top: 0.6rem;
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.editorActions {
+  margin-top: 0.55rem;
+  display: flex;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.editorBtn {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: #fff;
+  color: var(--ifm-font-color-base);
+  border-radius: 8px;
+  padding: 0.3rem 0.62rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.dangerBtn {
+  border-color: #f0b7b7;
+  color: #8f1e1e;
+  background: #fff9f9;
+}
+
+.saveStatus {
+  margin-top: 0.55rem;
+  font-size: 0.82rem;
+  padding: 0.42rem 0.55rem;
+  border-radius: 8px;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  background: #f7f9ff;
+}
+
+.saveStatusSuccess {
+  border-color: #b8e8c2;
+  background: #effbf1;
+  color: #1f6d2c;
+}
+
+.saveStatusError {
+  border-color: #f0b7b7;
+  background: #fff2f2;
+  color: #8f1e1e;
 }
 
 @media (max-width: 996px) {
